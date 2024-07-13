@@ -1,0 +1,9 @@
+<Files "compose.yml">
+  Order allow,deny
+  Deny from all
+</Files>
+
+<Files "Dockerfile">
+  Order allow,deny
+  Deny from all
+</Files>
