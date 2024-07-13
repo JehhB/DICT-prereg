@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/lib/database.php';
 require_once __DIR__ . '/lib/csrf.php';
+require_once __DIR__ . '/lib/flash.php';
 
 session_start();
 

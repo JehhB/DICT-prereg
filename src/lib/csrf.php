@@ -3,11 +3,9 @@
 /**
  * Generate new CsrfToken and save if to $_SESSION['csrf_token']
  */
-function generateCsrfToken()
+function regenerateCsrfToken()
 {
-  if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-  }
+  $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
 /**
@@ -21,7 +19,10 @@ function validateCsrfToken(?string $token = null)
     $token = $_POST['__token'];
   }
   if (is_null($token)) return false;
-  return hash_equals($_SESSION['csrf_token'], $token);
+  if (!hash_equals($_SESSION['csrf_token'], $token)) return false;
+
+  regenerateCsrfToken();
+  return true;
 }
 
 /**
@@ -31,7 +32,7 @@ function validateCsrfToken(?string $token = null)
  */
 function csrf_field()
 {
-  if (!isset($_SESSION['csrf_token'])) generateCsrfToken();
+  if (!isset($_SESSION['csrf_token'])) regenerateCsrfToken();
   $token = $_SESSION['csrf_token'];
 
   return <<<END

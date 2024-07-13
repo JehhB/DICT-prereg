@@ -18,6 +18,26 @@
 </head>
 
 <body class="bg-light-subtle">
+
+  <?php if (flash_has('errors', 'form')): ?>
+    <div class="modal fade" tabindex="-1" x-data x-init="new bootstrap.Modal($el).show()">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Modal title</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p><?= flash_get('errors', 'form') ?></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <?php endif ?>
+
   <main class="container my-3 my-sm-4">
     <div class="col col-md-11 col-lg-9 col-xl-8 col-xxl-7 mx-auto">
       <div class="card mb-3 shadow-sm">
@@ -27,28 +47,40 @@
       <h1>
         DICT Event Preregistration
       </h1>
-      <form action="/?p=2" method="post">
+      <form action="/?p=2" method="post" novalidate>
         <?= csrf_field() ?>
         <div class="card mb-4 shadow-sm">
           <div class="card-header">
             Personal Details
           </div>
           <div class="card-body">
-            <div class="mb-3">
+            <div x-data="{valid:false}" class="mb-3">
               <label for="name" class="form-label">Name</label>
-              <input type="text" class="form-control" id="name" name="name" required>
+              <input type="text" class="form-control" id="name" name="name" required @input="$el.checkValidity()">
+              <?php if (flash_has('errors', 'name')): ?>
+                <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'name') ?></strong>
+              <?php endif ?>
             </div>
-            <div class="mb-3">
+            <div x-data="{valid:false}" class="mb-3">
               <label for="email" class="form-label">Email</label>
-              <input type="email" class="form-control" id="email" name="email" required>
+              <input type="email" class="form-control" id="email" name="email" required @input="valid=$el.checkValidity()">
+              <?php if (flash_has('errors', 'email')): ?>
+                <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'email') ?></strong>
+              <?php endif ?>
             </div>
-            <div class="mb-3">
+            <div x-data="{valid:false}" class="mb-3">
               <label for="organization" class="form-label">Organization</label>
-              <input type="text" class="form-control" id="organization" name="organization" required>
+              <input type="text" class="form-control" id="organization" name="organization" required @input="valid=$el.checkValidity()" autocomplete="off">
+              <?php if (flash_has('errors', 'organization')): ?>
+                <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'organization') ?></strong>
+              <?php endif ?>
             </div>
-            <div>
+            <div x-data="{valid:false}">
               <label for="position" class="form-label">Position</label>
-              <input type="text" class="form-control" id="position" name="position" required>
+              <input type="text" class="form-control" id="position" name="position" required @input="valid=$el.checkValidity()" autocomplete="off">
+              <?php if (flash_has('errors', 'position')): ?>
+                <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'position') ?></strong>
+              <?php endif ?>
             </div>
           </div>
         </div>
