@@ -1,11 +1,13 @@
 <?php
 
+require_once __DIR__ . '/src/setup.php';
+
 if (
-  $_SERVER['REQUEST_METHOD'] == 'POST' &&  
-  isset($_GET['p']) && 
+  $_SERVER['REQUEST_METHOD'] == 'POST' &&
+  isset($_GET['p']) &&
   $_GET['p'] == 2
 ) {
   include __DIR__ . '/src/slots.php';
-} else  {
+} else {
   include __DIR__ . '/src/personal_info.php';
 }

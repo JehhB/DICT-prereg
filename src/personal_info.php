@@ -20,7 +20,7 @@
 </head>
 
 <body class="bg-light-subtle">
-  <main class="container my-4">
+  <main class="container my-3 my-sm-4">
     <div class="col col-md-11 col-lg-9 col-xl-8 col-xxl-7 mx-auto">
       <div class="card mb-3 shadow-sm">
         <img src="https://placehold.co/970x250.png?text=Banner+Image" class="card-img-top" alt="Banner">
@@ -30,6 +30,7 @@
         DICT Event Preregistration
       </h1>
       <form action="/?p=2" method="post">
+        <?= csrf_field() ?>
         <div class="card mb-4 shadow-sm">
           <div class="card-header">
             Personal Details
@@ -78,14 +79,14 @@
             <div class="form-check">
               <input class="form-check-input" type="checkbox" value="" id="privacyAgree" required>
               <label class="form-check-label" for="privacyAgree">
-                Checked checkbox
+                I Agree
               </label>
             </div>
           </div>
         </div>
 
         <div class="row px-3">
-          <button type="submit" class="btn btn-primary ms-auto col-auto">Submit</button>
+          <button type="submit" class="btn btn-primary col-auto">Next</button>
         </div>
 
       </form>
