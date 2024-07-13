@@ -15,6 +15,11 @@
     integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
     crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+  <style>
+    [x-cloak] {
+      display: none !important;
+    }
+  </style>
 </head>
 
 <body class="bg-light-subtle">
@@ -27,26 +32,35 @@
       <h1>
         DICT Event Preregistration
       </h1>
-      <form action="/?p=3" method="post">
+      <form action="/?p=3" method="post" x-data="{sel:[]}">
         <?= csrf_field() ?>
 
         <?php
         $timeslot_titles = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"];
-        $timeslots = execute('SELECT timeslot_id FROM Timeslots')->fetchAll(PDO::FETCH_COLUMN);
+        $timeslots = execute('SELECT timeslot_id as id, timestart, timeend FROM Timeslots')->fetchAll();
+        $timeslots = array_map(function ($v) {
+          return array_merge($v, [
+            'start' => (new DateTime($v['timestart']))->format('M d h:ia'),
+            'end' => (new DateTime($v['timeend']))->format('h:ia'),
+          ]);
+        }, $timeslots);
 
-        $booths = execute('SELECT booth_id, topic from Booths')->fetchAll();
+        $booths = execute('SELECT booth_id as id, topic from Booths')->fetchAll();
 
-        foreach ($timeslots as $i => $timeslot_id):
+        foreach ($timeslots as $i => $t):
         ?>
-          <div class="card mb-4 shadow-sm">
-            <div class="card-header">
-              <?= $timeslot_titles[$i] ?> Timeslot
+          <div id="c_<?= $i ?>" class="card mb-4 shadow-sm" x-data="radio('c_<?= $i + 1 ?>')" x-modelable="opt" x-model="sel[<?= $i ?>]">
+            <div class="card-header d-flex align-items-center">
+              <span>
+                <?= $timeslot_titles[$i] ?> Timeslot <em>(<?= $t['start'] ?> - <?= $t['end'] ?>)</em>
+              </span>
+              <button type="button" x-cloak :class="opt==null && 'opacity-0'" @click="opt=null" class="btn btn-sm btn-outline-primary ms-auto">Clear</button>
             </div>
             <div class="card-body">
               <?php foreach ($booths as $j => $b): ?>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="booths[<?= $timeslot_id ?>]" id="r_<?= $timeslot_id ?>_<?= $b['booth_id'] ?>" value="<?= $b['booth_id'] ?>" required>
-                  <label class="form-check-label" for="r_<?= $timeslot_id ?>_<?= $b['booth_id'] ?>">
+                  <input x-bind="input" x-model="opt" class="form-check-input" type="radio" name="booths[<?= $t['id'] ?>]" id="r_<?= $t['id'] ?>_<?= $b['id'] ?>" value="<?= $b['id'] ?>" required>
+                  <label class="form-check-label" for="r_<?= $t['id'] ?>_<?= $b['id'] ?>">
                     <?= $b['topic'] ?>
                   </label>
                 </div>
@@ -55,14 +69,40 @@
           </div>
         <?php endforeach ?>
 
-        <div class="row px-3 gap-2">
-          <button type="submit" class="btn btn-primary col-auto">Prev</button>
-          <button type="button" class="btn btn-primary col-auto">Next</button>
+        <div id="c_<?= count($timeslots) ?>" class="row px-3 gap-2">
+          <button type="button" class="btn btn-primary col-auto">Prev</button>
+          <button type="submit" class="btn btn-primary col-auto">Next</button>
+          <button type="button" class="btn btn-outline-primary col-auto ms-auto">Clear selection</button>
         </div>
 
       </form>
     </div>
   </main>
+
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('radio', (next_target) => ({
+        opt: null,
+        init() {
+          this.$watch('opt', (cur, prev) => {
+            this.sel.delete(prev);
+            this.sel.add(cur);
+          })
+        },
+
+        input: {
+          [':disabled']() {
+            return this.opt != this.$el.value && this.sel.includes(this.$el.value);
+          },
+          ['@change']() {
+            document.getElementById(next_target).scrollIntoView({
+              behavior: 'smooth'
+            });
+          },
+        },
+      }));
+    })
+  </script>
 </body>
 
 </html>
