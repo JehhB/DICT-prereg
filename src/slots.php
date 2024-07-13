@@ -54,7 +54,7 @@
               <span>
                 <?= $timeslot_titles[$i] ?> Timeslot <em>(<?= $t['start'] ?> - <?= $t['end'] ?>)</em>
               </span>
-              <button type="button" x-cloak :class="opt==null && 'opacity-0'" @click="opt=null" class="btn btn-sm btn-outline-primary ms-auto">Clear</button>
+              <button type="button" x-cloak :class="opt==null && 'opacity-0'" :tabindex="opt==null ? -1 : 0" @click="opt=null" class="btn btn-sm btn-outline-primary ms-auto">Clear</button>
             </div>
             <div class="card-body">
               <?php foreach ($booths as $j => $b): ?>
@@ -72,7 +72,7 @@
         <div id="c_<?= count($timeslots) ?>" class="row px-3 gap-2">
           <button type="button" class="btn btn-primary col-auto">Prev</button>
           <button type="submit" class="btn btn-primary col-auto">Next</button>
-          <button type="button" class="btn btn-outline-primary col-auto ms-auto">Clear selection</button>
+          <button type="button" class="btn btn-outline-primary col-auto ms-auto" @click="sel=[]">Clear selection</button>
         </div>
 
       </form>
@@ -83,12 +83,6 @@
     document.addEventListener('alpine:init', () => {
       Alpine.data('radio', (next_target) => ({
         opt: null,
-        init() {
-          this.$watch('opt', (cur, prev) => {
-            this.sel.delete(prev);
-            this.sel.add(cur);
-          })
-        },
 
         input: {
           [':disabled']() {
