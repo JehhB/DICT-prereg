@@ -112,6 +112,8 @@ if ($page == 1) {
   include __DIR__ . '/src/views/reg_page1.php';
 } else if ($page == 2) {
   include __DIR__ . '/src/views/reg_page2.php';
+} else if ($page == 3) {
+  include __DIR__ . '/src/views/reg_page3.php';
 } else {
   header('Location: ./?p=1');
   exit();
