@@ -32,7 +32,7 @@
       <h1>
         DICT Event Preregistration
       </h1>
-      <form action="/?p=3" method="post" x-data="{sel:[]}">
+      <form action="#" method="post" x-data="{sel:[]}">
         <?= csrf_field() ?>
 
         <?php

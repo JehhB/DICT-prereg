@@ -47,7 +47,7 @@
       <h1>
         DICT Event Preregistration
       </h1>
-      <form action="/?p=2" method="post" novalidate>
+      <form action="#" method="post">
         <?= csrf_field() ?>
         <div class="card mb-4 shadow-sm">
           <div class="card-header">

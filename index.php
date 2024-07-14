@@ -12,7 +12,7 @@ function bad_request()
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  if ($page == 2) {
+  if ($page == 1) {
     // sanitize and validate input
     $sanitize_filters = [
       'email' => FILTER_SANITIZE_EMAIL,
@@ -44,6 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       if (!$v) {
         flash_set('errors', $k, $error_message[$k]);
         $has_error = true;
+      } else {
+        $_SESSION['register_' . $k] = $v;
       }
     }
     if ($has_error) {
@@ -51,10 +53,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       exit();
     }
 
-    foreach ($input as $k => $v) {
-      $_SESSION['register_' . $k] = $v;
-    }
-  } else if ($page == 3) {
+    $_SESSION['_PASSED_1'] = true;
+    header('Location: ./?p=2');
+    exit();
+  } else if ($page == 2) {
     // Check if there is valid personal info
     if (!isset($_SESSION['_PASSED_1'])) {
       flash_set('errors', 'form', 'No personal data provided');
@@ -77,9 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $_SESSION['register_booths'] = $booths;
   };
 
-
-  header('Location: ' . $_SERVER['REQUEST_URI']);
-  exit();
+  bad_request();
 }
 
 if ($page == 2) {
