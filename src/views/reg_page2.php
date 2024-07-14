@@ -15,11 +15,8 @@
     integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
     crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
-  <style>
-    [x-cloak] {
-      display: none !important;
-    }
-  </style>
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./assets/script.js"></script>
 </head>
 
 <body class="bg-light-subtle">
@@ -80,22 +77,6 @@
   </main>
 
   <script>
-    document.addEventListener('alpine:init', () => {
-      Alpine.data('radio', (next_target) => ({
-        opt: null,
-
-        input: {
-          [':disabled']() {
-            return this.opt != this.$el.value && this.sel.includes(this.$el.value);
-          },
-          ['@change']() {
-            document.getElementById(next_target).scrollIntoView({
-              behavior: 'smooth'
-            });
-          },
-        },
-      }));
-    })
   </script>
 </body>
 
