@@ -7,9 +7,9 @@ $page = $_GET['p'] ?? 1;
 function bad_request()
 {
   http_response_code(400);
+  echo "<strong>Error 400: Bad request</strong>";
   exit();
 }
-
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   if ($page == 2) {
@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 if ($page == 2) {
-  include __DIR__ . '/src/slots.php';
+  include __DIR__ . '/src/views/reg_page2.php';
 } else {
-  include __DIR__ . '/src/personal_info.php';
+  include __DIR__ . '/src/views/reg_page1.php';
 }
