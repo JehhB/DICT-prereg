@@ -20,6 +20,26 @@
 </head>
 
 <body class="bg-light-subtle">
+
+  <?php if (flash_has('errors', 'form')): ?>
+    <div class="modal fade" tabindex="-1" x-data x-init="new bootstrap.Modal($el).show()">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Error</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p><?= flash_get('errors', 'form') ?></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <?php endif ?>
+
   <main class="container my-3 my-sm-4">
     <div class="col col-md-11 col-lg-9 col-xl-8 col-xxl-7 mx-auto">
       <div class="card mb-3 shadow-sm">

@@ -2,6 +2,8 @@
 
 require_once __DIR__ . '/src/setup.php';
 
+define('MAX_SLOTS', 2);
+
 $page = $_GET['p'] ?? 1;
 
 function bad_request()
@@ -48,6 +50,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['register_' . $k] = $v;
       }
     }
+
+    $stmt = execute('SELECT * FROM Registrations WHERE email = ?', [$input['email']]);
+    if ($stmt->fetch() !== false) {
+      flash_set('errors', 'email', 'Email is already registered');
+      $has_error = true;
+    }
+
     if ($has_error) {
       unset($_SESSION['_PASSED_1']);
       header('Location: ./?p=1');
@@ -103,18 +112,118 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     else if ($has_error) header('Location: ./?p=2');
     else header('Location: ./?p=3');
     exit();
-  };
+  } else if ($page == 3) {
+    if (isset($_POST['prev'])) {
+      header('Location: ./?p=2');
+      exit();
+    }
+    if (!isset($_SESSION['_PASSED_1'])) {
+      header('Location: ./?p=1');
+      exit();
+    }
+    if (!isset($_SESSION['_PASSED_2'])) {
+      header('Location: ./?p=2');
+      exit();
+    }
+
+
+    // Stop other operation in the database to avoid exceeding the limit
+    execute("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE");
+    $db = getDB();
+    try {
+      $db->beginTransaction();
+
+      execute(
+        "INSERT INTO Registrations (name, email, organization, position) VALUES (?, ?, ?, ?)",
+        [$_SESSION['register_name'], $_SESSION['register_email'], $_SESSION['register_organization'], $_SESSION['register_position']]
+      );
+      $registration_id = $db->lastInsertId();
+
+      $count_stmt = $db->prepare("
+              SELECT COUNT(*) as count 
+              FROM BoothRegistration 
+              WHERE timeslot_id = :timeslot_id AND booth_id = :booth_id
+      ");
+      $insert_stmt = $db->prepare("
+          INSERT INTO BoothRegistration (registration_id, timeslot_id, booth_id)
+          VALUES (:registration_id, :timeslot_id, :booth_id);
+      ");
+
+      $has_errors = false;
+      foreach ($_SESSION['register_booths'] as $timeslot_id => $booth_id) {
+        $args = [
+          ':timeslot_id' => $timeslot_id,
+          ':booth_id' => $booth_id,
+        ];
+        $count_stmt->execute($args);
+
+        if ($count_stmt->fetchColumn() < MAX_SLOTS) {
+          $args[':registration_id'] = $registration_id;
+          $insert_stmt->execute($args);
+        } else {
+          flash_set('errors', $timeslot_id, 'Please choose another booth, no slots left');
+          unset($_SESSION['register_booths'][$timeslot_id]);
+          $has_errors = true;
+        }
+      }
+
+      if ($has_errors) {
+        $db->rollBack();
+        unset($_SESSION['_PASSED_2']);
+        header('Location: ./?p=2');
+        exit();
+      }
+
+      $db->commit();
+
+      foreach (array_keys($_SESSION) as $k) {
+        if (str_starts_with($k, 'register_')) unset($_SESSION[$k]);
+      }
+      unset($_SESSION['_PASSED_1']);
+      unset($_SESSION['_PASSED_2']);
+
+      header('Location: ./?p=1');
+      exit();
+    } catch (Exception $e) {
+      $db->rollBack();
+      $_SESSION['fatal_error'] = ['code' => 500, 'message' => $e->getMessage()];
+      header('Location: /error.php');
+      exit();
+    }
+
+
+    var_dump($_SESSION);
+    exit();
+  }
 
   bad_request();
 }
 
 if ($page == 1) {
   include __DIR__ . '/src/views/reg_page1.php';
-} else if ($page == 2) {
-  include __DIR__ . '/src/views/reg_page2.php';
-} else if ($page == 3) {
-  include __DIR__ . '/src/views/reg_page3.php';
-} else {
+  exit();
+}
+
+if (!isset($_SESSION['_PASSED_1'])) {
+  flash_set('errors', 'form', 'No personal data provided');
   header('Location: ./?p=1');
   exit();
 }
+
+if ($page == 2) {
+  include __DIR__ . '/src/views/reg_page2.php';
+  exit();
+}
+
+if (!isset($_SESSION['_PASSED_2'])) {
+  flash_set('errors', 'form', 'Please choose your schedule');
+  header('Location: ./?p=2');
+  exit();
+}
+
+if ($page == 3) {
+  include __DIR__ . '/src/views/reg_page3.php';
+  exit();
+}
+
+header('Location: ./?p=3');

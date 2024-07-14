@@ -21,7 +21,7 @@ function validateCsrfToken(?string $token = null)
   if (is_null($token)) return false;
   if (!hash_equals($_SESSION['csrf_token'], $token)) return false;
 
-  regenerateCsrfToken();
+  //  regenerateCsrfToken();
   return true;
 }
 
