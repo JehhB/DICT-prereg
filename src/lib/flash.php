@@ -3,7 +3,7 @@
 /**
  * function to add save one time read data
  */
-function flash_set(string $bag, string $key, mixed $data)
+function flash_set(string $bag, mixed $key, mixed $data)
 {
   if (!isset($_SESSION[$bag])) $_SESSION[$bag] = [];
   $_SESSION[$bag][$key] = $data;
@@ -21,7 +21,7 @@ function safe_get_key(array $arr, ?string $key)
  *
  * @return mixed
  */
-function flash_get(string $bag, ?string $key = null)
+function flash_get(string $bag, mixed $key = null)
 {
   static $res = [];
 
@@ -39,7 +39,7 @@ function flash_get(string $bag, ?string $key = null)
  * check whether a key exist on flash bag
  * @return bool
  */
-function flash_has(string $bag, string $key)
+function flash_has(string $bag, mixed $key)
 {
   return flash_get($bag, $key) !== false;
 }

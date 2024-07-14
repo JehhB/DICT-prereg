@@ -58,28 +58,58 @@
           <div class="card-body">
             <div x-data="{valid:false}" class="mb-3">
               <label for="name" class="form-label">Name</label>
-              <input type="text" class="form-control" id="name" name="name" required @input="$el.checkValidity()">
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                name="name"
+                required
+                value="<?= htmlspecialchars($_SESSION['register_name'] ?? '') ?>"
+                @input="$el.checkValidity()">
               <?php if (flash_has('errors', 'name')): ?>
                 <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'name') ?></strong>
               <?php endif ?>
             </div>
             <div x-data="{valid:false}" class="mb-3">
               <label for="email" class="form-label">Email</label>
-              <input type="email" class="form-control" id="email" name="email" required @input="valid=$el.checkValidity()">
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                required
+                value="<?= htmlspecialchars($_SESSION['register_email'] ?? '') ?>"
+                @input="valid=$el.checkValidity()">
               <?php if (flash_has('errors', 'email')): ?>
                 <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'email') ?></strong>
               <?php endif ?>
             </div>
             <div x-data="{valid:false}" class="mb-3">
               <label for="organization" class="form-label">Organization</label>
-              <input type="text" class="form-control" id="organization" name="organization" required @input="valid=$el.checkValidity()" autocomplete="off">
+              <input
+                type="text"
+                class="form-control"
+                id="organization"
+                name="organization"
+                required
+                autocomplete="off"
+                value="<?= htmlspecialchars($_SESSION['register_organization'] ?? '') ?>"
+                @input="valid=$el.checkValidity()">
               <?php if (flash_has('errors', 'organization')): ?>
                 <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'organization') ?></strong>
               <?php endif ?>
             </div>
             <div x-data="{valid:false}">
               <label for="position" class="form-label">Position</label>
-              <input type="text" class="form-control" id="position" name="position" required @input="valid=$el.checkValidity()" autocomplete="off">
+              <input
+                type="text"
+                class="form-control"
+                id="position"
+                name="position"
+                required
+                autocomplete="off"
+                value="<?= htmlspecialchars($_SESSION['register_position'] ?? '') ?>"
+                @input="valid=$el.checkValidity()">
               <?php if (flash_has('errors', 'position')): ?>
                 <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'position') ?></strong>
               <?php endif ?>

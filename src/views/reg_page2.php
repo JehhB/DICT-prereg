@@ -29,7 +29,7 @@
       <h1>
         DICT Event Preregistration
       </h1>
-      <form action="#" method="post" x-data="{sel:[]}">
+      <form action="#" method="post" x-data="{sel:[]}" novalidate>
         <?= csrf_field() ?>
 
         <?php
@@ -46,29 +46,47 @@
 
         foreach ($timeslots as $i => $t):
         ?>
-          <div id="c_<?= $i ?>" class="card mb-4 shadow-sm" x-data="radio('c_<?= $i + 1 ?>')" x-modelable="opt" x-model="sel[<?= $i ?>]">
+          <div
+            id="c_<?= $i ?>"
+            class="card mb-4 shadow-sm"
+            x-data="radio('c_<?= $i + 1 ?>')"
+            x-modelable="opt"
+            x-model="sel[<?= $i ?>]">
             <div class="card-header d-flex align-items-center">
               <span>
                 <?= $timeslot_titles[$i] ?> Timeslot <em>(<?= $t['start'] ?> - <?= $t['end'] ?>)</em>
               </span>
-              <button type="button" x-cloak :class="opt==null && 'opacity-0'" :tabindex="opt==null ? -1 : 0" @click="opt=null" class="btn btn-sm btn-outline-primary ms-auto">Clear</button>
+              <button type="button" x-cloak :class="opt==null && 'opacity-0'" :tabindex="opt == null ? -1 : 0" @click="opt=null" class="btn btn-sm btn-outline-primary ms-auto">Clear</button>
             </div>
             <div class="card-body">
               <?php foreach ($booths as $j => $b): ?>
                 <div class="form-check">
-                  <input x-bind="input" x-model="opt" class="form-check-input" type="radio" name="booths[<?= $t['id'] ?>]" id="r_<?= $t['id'] ?>_<?= $b['id'] ?>" value="<?= $b['id'] ?>" required>
+                  <input
+                    <?php if ($b['id'] == ($_SESSION['register_booths'][$t['id']] ?? '0')): ?>
+                    x-init="setTimeout(() => {opt='<?= $b['id'] ?>'}, 0)"
+                    <?php endif ?>
+                    x-bind="input"
+                    x-model.fill="opt"
+                    class="form-check-input"
+                    type="radio"
+                    name="booths[<?= $t['id'] ?>]" id="r_<?= $t['id'] ?>_<?= $b['id'] ?>"
+                    value="<?= $b['id'] ?>"
+                    required>
                   <label class="form-check-label" for="r_<?= $t['id'] ?>_<?= $b['id'] ?>">
                     <?= $b['topic'] ?>
                   </label>
                 </div>
               <?php endforeach ?>
+              <?php if (flash_has('errors', $t['id'])): ?>
+                <strong x-transition x-show.important="opt==null" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', $t['id']) ?></strong>
+              <?php endif ?>
             </div>
           </div>
         <?php endforeach ?>
 
         <div id="c_<?= count($timeslots) ?>" class="row px-3 gap-2">
-          <button type="button" class="btn btn-primary col-auto">Prev</button>
-          <button type="submit" class="btn btn-primary col-auto">Next</button>
+          <input type="submit" name="prev" class="btn btn-primary col-auto" value="Prev">
+          <input type="submit" name="next" class="btn btn-primary col-auto" value="Next">
           <button type="button" class="btn btn-outline-primary col-auto ms-auto" @click="sel=[]">Clear selection</button>
         </div>
 

@@ -49,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       }
     }
     if ($has_error) {
+      unset($_SESSION['_PASSED_1']);
       header('Location: ./?p=1');
       exit();
     }
@@ -64,26 +65,54 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       exit();
     }
 
+    if (isset($_POST['booths'])) {
+      $booths = array_unique($_POST['booths']);
+    } else {
+      $booths = [];
+    }
+
     // Check if there is valid booth selection is given
-    if (!isset($_POST['booths'])) bad_request();
-    $booths = array_unique($_POST['booths']);
-    $countTimeslots = execute("SELECT COUNT(*) FROM Timeslots")->fetchColumn();
-    if (!is_array($booths) or count($booths) != $countTimeslots) bad_request();
+    $timeslots = execute("SELECT timeslot_id FROM Timeslots")->fetchAll(PDO::FETCH_COLUMN);
+    $_SESSION['register_booths'] = $booths;
+
+    $has_error = false;
+    if (!is_array($booths) or count($booths) != count($timeslots)) {
+      $has_error = true;
+      $missing_keys = array_diff($timeslots, array_keys($booths));
+      foreach ($missing_keys as $k) {
+        flash_set('errors', $k, 'You must select a booth');
+      }
+    }
 
 
     $validBoothIds = execute("SELECT booth_id FROM Booths")->fetchAll(PDO::FETCH_COLUMN);
-    foreach ($booths as $id) {
-      // should only be allowed to pass booth id
-      if (!array_search($id, $validBoothIds)) bad_request();
+    foreach ($booths as $k => $id) {
+      if (array_search((int)$id, $validBoothIds) === false) {
+        $has_error = true;
+        flash_set('errors', $k, 'Unknown booth selected');
+      }
     }
-    $_SESSION['register_booths'] = $booths;
+
+    if ($has_error) {
+      unset($_SESSION['_PASSED_2']);
+    } else {
+      $_SESSION['_PASSED_2'] = true;
+    }
+
+    if (isset($_POST['prev'])) header('Location: ./?p=1');
+    else if ($has_error) header('Location: ./?p=2');
+    else header('Location: ./?p=3');
+    exit();
   };
 
   bad_request();
 }
 
-if ($page == 2) {
+if ($page == 1) {
+  include __DIR__ . '/src/views/reg_page1.php';
+} else if ($page == 2) {
   include __DIR__ . '/src/views/reg_page2.php';
 } else {
-  include __DIR__ . '/src/views/reg_page1.php';
+  header('Location: ./?p=1');
+  exit();
 }

@@ -16,7 +16,6 @@ function radio(next_target) {
 }
 
 document.addEventListener('alpine:init', () => {
-  console.log('hello');
   Alpine.data('radio', radio);
 })
 
