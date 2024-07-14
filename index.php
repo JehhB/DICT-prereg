@@ -95,9 +95,21 @@ function handle_page_2()
   foreach ($booths as $k => $id) {
     if (array_search((int)$id, $validBoothIds) === false) {
       $has_error = true;
+      unset($_SESSION['register_booths'][$k]);
       flash_set('errors', $k, 'Unknown booth selected');
     }
   }
+
+  $count = BoothRegistration::count($booths);
+  foreach ($count as $k => $v) {
+    if ($v >= MAX_SLOTS) {
+      $has_error = true;
+      unset($_SESSION['register_booths'][$k]);
+      flash_set('errors', $k, 'Please choose another booth, no slots left');
+    }
+  }
+
+
 
   if ($has_error) {
     unset($_SESSION['_PASSED_2']);

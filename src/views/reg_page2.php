@@ -49,7 +49,7 @@
       <h1>
         DICT Event Preregistration
       </h1>
-      <form action="#" method="post" x-data="{sel:[]}" novalidate>
+      <form action="#" method="post" x-data="{sel:[]}">
         <?= csrf_field() ?>
 
         <?php
