@@ -182,6 +182,7 @@ function handle_page_3()
     $db->commit();
 
     clear_registration();
+    $_SESSION['auth_summary'] = $reg->slug;
     redirect_response('./summary.php?s=' . $reg->slug);
   } catch (Exception $e) {
     $db->rollBack();

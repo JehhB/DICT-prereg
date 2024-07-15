@@ -80,7 +80,7 @@ if (isset($_POST['save'])) {
 
     $booths = [];
     foreach ($current as $b) {
-      $booths[$b['timeslot_id']] = $_POST["booths"][$b['booth_registration_id']];
+      $booths[$b['timeslot_id']] = $_POST["booths"][$b['booth_registration_id']] ?? 0;
     }
     $count = BoothRegistration::count($booths);
 

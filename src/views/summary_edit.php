@@ -1,3 +1,21 @@
+<?php
+$reg = Registration::find($_GET['s']);
+
+$timeslot_titles = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"];
+
+$registered_booths = $reg->get_registered_booths();
+$registered_booths = array_map(function ($v) {
+  return array_merge($v, [
+    'start' => (new DateTime($v['timestart']))->format('M d h:ia'),
+    'end' => (new DateTime($v['timeend']))->format('h:ia'),
+  ]);
+}, $registered_booths);
+
+$booths = execute('SELECT booth_id as id, topic from Booths WHERE event_id = ?', [
+  $reg->event_id
+])->fetchAll();
+$count = BoothRegistration::count_summary();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -54,33 +72,15 @@
       <h1>
         Change schedule
       </h1>
-      <form action="#" method="post" x-data="form('init-data')">
+      <form action="#" method="post" x-data="form('init-data', '<?= $reg->id ?>')">
         <?= csrf_field() ?>
 
-        <?php
-        $reg = Registration::find($_GET['s']);
-        $timeslot_titles = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"];
-
-        $registered_booths = $reg->get_registered_booths();
-        $registered_booths = array_map(function ($v) {
-          return array_merge($v, [
-            'start' => (new DateTime($v['timestart']))->format('M d h:ia'),
-            'end' => (new DateTime($v['timeend']))->format('h:ia'),
-          ]);
-        }, $registered_booths);
-
-        $booths = execute('SELECT booth_id as id, topic from Booths WHERE event_id = ?', [
-          $reg->event_id
-        ])->fetchAll();
-        $count = BoothRegistration::count_summary();
-
-
-        foreach ($registered_booths as $i => $t):
-        ?>
+        <?php foreach ($registered_booths as $i => $t): ?>
           <div
+            data-radio-timeslot="<?= $t['timeslot_id'] ?>"
             id="c_<?= $i ?>"
             class="card mb-4 shadow-sm"
-            x-data="radio('c_<?= $i + 1 ?>')"
+            x-data="radio('c_<?= $i + 1 ?>', '<?= $t['booth_id'] ?>')"
             x-modelable="opt"
             x-model="sel[<?= $i ?>]">
             <div class="card-header d-flex align-items-center">
@@ -91,30 +91,24 @@
             </div>
             <div class="card-body">
               <?php foreach ($booths as $j => $b):
-                $rem_slots = MAX_SLOTS - ($count[$t['timeslot_id']][$b['id']] ?? 0);
+                $grace_time = (new DateTime($t['timestart']))->modify('+5 minutes');
+                $current = new DateTime();
               ?>
                 <div class="form-check d-flex">
                   <input
-                    <?php if ($b['id'] == $t['booth_id']): ?>
-                    x-init="setTimeout(() => {opt='<?= $b['id'] ?>'}, 0)"
-                    <?php endif ?>
-                    <?php
-                    $grace_time = (new DateTime($t['timestart']))->modify('+5 minutes');
-                    $current = new DateTime();
-                    if ($current > $grace_time) :
-                    ?>
-                    disabled
+                    data-radio-booth="<?= $b['id'] ?>"
+                    <?php if ($current > $grace_time): ?>
+                    data-radio-disabled="disabled"
                     <?php else: ?>
-                    :disabled="(opt != $el.value && sel.includes($el.value)) || isFull('<?= $t['timeslot_id'] ?>','<?= $b['id'] ?>')"
+                    name="booths[<?= $t['booth_registration_id'] ?>]"
+                    required
                     <?php endif ?>
                     x-bind="input"
                     x-model.fill="opt"
                     class="form-check-input"
                     type="radio"
-                    name="booths[<?= $t['booth_registration_id'] ?>]"
                     id="r_<?= $t['timeslot_id'] ?>_<?= $b['id'] ?>"
-                    value="<?= $b['id'] ?>"
-                    required>
+                    value="<?= $b['id'] ?>">
                   <label class="ms-2 form-check-label d-block" for="r_<?= $t['timeslot_id'] ?>_<?= $b['id'] ?>">
                     <?= $b['topic'] ?>
                   </label>

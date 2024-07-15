@@ -82,9 +82,14 @@
         foreach ($timeslots as $i => $t):
         ?>
           <div
+            data-radio-timeslot="<?= $t['id'] ?>"
             id="c_<?= $i ?>"
             class="card mb-4 shadow-sm"
+            <?php if (isset($_SESSION['register_booths'][$t['id']])) : ?>
+            x-data="radio('c_<?= $i + 1 ?>', '<?= $_SESSION['register_booths'][$t['id']] ?>')"
+            <?php else: ?>
             x-data="radio('c_<?= $i + 1 ?>')"
+            <?php endif ?>
             x-modelable="opt"
             x-model="sel[<?= $i ?>]">
             <div class="card-header d-flex align-items-center">
@@ -95,14 +100,10 @@
             </div>
             <div class="card-body">
               <?php foreach ($booths as $j => $b):
-                $rem_slots = MAX_SLOTS - ($count[$t['id']][$b['id']] ?? 0);
               ?>
                 <div class="form-check d-flex">
                   <input
-                    <?php if ($b['id'] == ($_SESSION['register_booths'][$t['id']] ?? '0')): ?>
-                    x-init="setTimeout(() => {opt='<?= $b['id'] ?>'}, 0)"
-                    <?php endif ?>
-                    :disabled="(opt != $el.value && sel.includes($el.value)) || isFull('<?= $t['id'] ?>','<?= $b['id'] ?>')"
+                    data-radio-booth="<?= $b['id'] ?>"
                     x-bind="input"
                     x-model.fill="opt"
                     class="form-check-input"

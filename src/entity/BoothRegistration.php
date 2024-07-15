@@ -39,13 +39,23 @@ class BoothRegistration
     return $boothReg;
   }
 
-  public static function count_summary(): array
+  public static function count_summary(mixed $exclude = null): array
   {
-    $query = "SELECT timeslot_id, booth_id, COUNT(*) as count 
+    if (is_null($exclude)) {
+      $query = "SELECT timeslot_id, booth_id, COUNT(*) as count 
                   FROM BoothRegistration 
                   GROUP BY timeslot_id, booth_id";
 
-    $stmt = execute($query);
+      $stmt = execute($query);
+    } else {
+      $query = "SELECT timeslot_id, booth_id, COUNT(*) as count 
+                  FROM BoothRegistration 
+                  WHERE registration_id <> ?
+                  GROUP BY timeslot_id, booth_id";
+
+      $stmt = execute($query, [$exclude]);
+    }
+
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $counts = [];
