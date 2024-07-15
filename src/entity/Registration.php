@@ -1,6 +1,6 @@
 <?php
 
-define('MAX_SLOTS', 2);
+define('MAX_SLOTS', 3);
 
 class Registration
 {

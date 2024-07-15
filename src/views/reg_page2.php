@@ -17,6 +17,14 @@
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
   <link rel="stylesheet" href="./assets/style.css">
   <script src="./assets/script.js"></script>
+
+  <script id="init-data" type="application/json">
+    <?php
+    $count = BoothRegistration::count_summary();
+    $count['_MAX_SLOTS'] = MAX_SLOTS;
+    echo json_encode($count);
+    ?>
+  </script>
 </head>
 
 <body class="bg-light-subtle">
@@ -49,7 +57,7 @@
       <h1>
         DICT Event Preregistration
       </h1>
-      <form action="#" method="post" x-data="{sel:[]}" novalidate>
+      <form action="#" method="post" x-data="form('init-data')">
         <?= csrf_field() ?>
 
         <?php
@@ -63,6 +71,8 @@
         }, $timeslots);
 
         $booths = execute('SELECT booth_id as id, topic from Booths')->fetchAll();
+        $count = BoothRegistration::count_summary();
+
 
         foreach ($timeslots as $i => $t):
         ?>
@@ -79,12 +89,15 @@
               <button type="button" x-cloak :class="opt==null && 'opacity-0'" :tabindex="opt == null ? -1 : 0" @click="opt=null" class="btn btn-sm btn-outline-primary ms-auto">Clear</button>
             </div>
             <div class="card-body">
-              <?php foreach ($booths as $j => $b): ?>
-                <div class="form-check">
+              <?php foreach ($booths as $j => $b):
+                $rem_slots = MAX_SLOTS - ($count[$t['id']][$b['id']] ?? 0);
+              ?>
+                <div class="form-check d-flex">
                   <input
                     <?php if ($b['id'] == ($_SESSION['register_booths'][$t['id']] ?? '0')): ?>
                     x-init="setTimeout(() => {opt='<?= $b['id'] ?>'}, 0)"
                     <?php endif ?>
+                    :disabled="(opt != $el.value && sel.includes($el.value)) || isFull('<?= $t['id'] ?>','<?= $b['id'] ?>')"
                     x-bind="input"
                     x-model.fill="opt"
                     class="form-check-input"
@@ -92,9 +105,11 @@
                     name="booths[<?= $t['id'] ?>]" id="r_<?= $t['id'] ?>_<?= $b['id'] ?>"
                     value="<?= $b['id'] ?>"
                     required>
-                  <label class="form-check-label" for="r_<?= $t['id'] ?>_<?= $b['id'] ?>">
+                  <label class="ms-2 form-check-label d-block" for="r_<?= $t['id'] ?>_<?= $b['id'] ?>">
                     <?= $b['topic'] ?>
                   </label>
+                  <small class="ms-auto" x-text="format('<?= $t['id'] ?>', '<?= $b['id'] ?>')">
+                  </small>
                 </div>
               <?php endforeach ?>
               <?php if (flash_has('errors', $t['id'])): ?>

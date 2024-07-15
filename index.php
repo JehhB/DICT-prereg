@@ -20,12 +20,27 @@ function handle_page_1()
     'name' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
     'organization' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
     'position' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+    'sex' => FILTER_DEFAULT,
+    'birthday' => FILTER_DEFAULT,
+    'contact_number' => FILTER_DEFAULT,
+    'affiliation' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+    'type' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+    'event_id' => FILTER_SANITIZE_NUMBER_INT,
+    'is_indigenous' => FILTER_DEFAULT,
   ];
+
   $validate_filters = [
     'email' => FILTER_VALIDATE_EMAIL,
     'name' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/\S+/']],
     'organization' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/\S+/']],
     'position' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/\S+/']],
+    'sex' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/^[MF]$/']],
+    'birthday' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/^\d{4}-\d{2}-\d{2}$/']],
+    'contact_number' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/^\d{10,}$/']],
+    'affiliation' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/\S+/']],
+    'type' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/\S+/']],
+    'event_id' => FILTER_VALIDATE_INT,
+    'is_indigenous' => FILTER_VALIDATE_BOOLEAN,
   ];
 
   $input = filter_var_array($_POST, $sanitize_filters);
@@ -37,11 +52,18 @@ function handle_page_1()
     'name' => 'Name must be provided',
     'organization' => 'Organization name must be provided',
     'position' => 'Position must be provided',
+    'sex' => 'Invalid sex value',
+    'birthday' => 'Invalid birthday format (YYYY-MM-DD)',
+    'contact_number' => 'Invalid contact number',
+    'affiliation' => 'Affiliation must be provided',
+    'type' => 'Type must be provided',
+    'event_id' => 'Event ID must be a valid integer',
+    'is_indigenous' => 'Choose a valid value',
   ];
 
   $has_error = false;
   foreach ($input as $k => $v) {
-    if (!$v) {
+    if ($v === false || $v === null) {
       flash_set('errors', $k, $error_message[$k]);
       $has_error = true;
     } else {
@@ -95,9 +117,21 @@ function handle_page_2()
   foreach ($booths as $k => $id) {
     if (array_search((int)$id, $validBoothIds) === false) {
       $has_error = true;
+      unset($_SESSION['register_booths'][$k]);
       flash_set('errors', $k, 'Unknown booth selected');
     }
   }
+
+  $count = BoothRegistration::count($booths);
+  foreach ($count as $k => $v) {
+    if ($v >= MAX_SLOTS) {
+      $has_error = true;
+      unset($_SESSION['register_booths'][$k]);
+      flash_set('errors', $k, 'Please choose another booth, no slots left');
+    }
+  }
+
+
 
   if ($has_error) {
     unset($_SESSION['_PASSED_2']);

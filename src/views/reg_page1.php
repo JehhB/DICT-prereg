@@ -49,11 +49,12 @@
       <h1>
         DICT Event Preregistration
       </h1>
-      <form action="#" method="post">
+      <form action="#" method="post" novalidate>
         <?= csrf_field() ?>
+
         <div class="card mb-4 shadow-sm">
           <div class="card-header">
-            Personal Details
+            Personal Information
           </div>
           <div class="card-body">
             <div x-data="{valid:false}" class="mb-3">
@@ -71,6 +72,31 @@
               <?php endif ?>
             </div>
             <div x-data="{valid:false}" class="mb-3">
+              <label for="sex" class="form-label">Sex</label>
+              <select class="form-control" id="sex" name="sex" required>
+                <option>-- Please choose your sex --</option>
+                <option value="M" <?= isset($_SESSION['register_sex']) && $_SESSION['register_sex'] === 'M' ? 'selected' : '' ?>>Male</option>
+                <option value="F" <?= isset($_SESSION['register_sex']) && $_SESSION['register_sex'] === 'F' ? 'selected' : '' ?>>Female</option>
+              </select>
+              <?php if (flash_has('errors', 'sex')): ?>
+                <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'sex') ?></strong>
+              <?php endif ?>
+            </div>
+            <div x-data="{valid:false}" class="mb-3">
+              <label for="birthday" class="form-label">Birthday</label>
+              <input
+                type="date"
+                class="form-control"
+                id="birthday"
+                name="birthday"
+                required
+                value="<?= htmlspecialchars($_SESSION['register_birthday'] ?? '') ?>"
+                @input="valid=$el.checkValidity()">
+              <?php if (flash_has('errors', 'birthday')): ?>
+                <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'birthday') ?></strong>
+              <?php endif ?>
+            </div>
+            <div x-data="{valid:false}" class="mb-3">
               <label for="email" class="form-label">Email</label>
               <input
                 type="email"
@@ -85,21 +111,74 @@
               <?php endif ?>
             </div>
             <div x-data="{valid:false}" class="mb-3">
-              <label for="organization" class="form-label">Organization</label>
+              <label for="contact_number" class="form-label">Contact Number</label>
               <input
                 type="text"
                 class="form-control"
-                id="organization"
-                name="organization"
+                id="contact_number"
+                name="contact_number"
                 required
-                autocomplete="off"
-                value="<?= htmlspecialchars($_SESSION['register_organization'] ?? '') ?>"
+                value="<?= htmlspecialchars($_SESSION['register_contact_number'] ?? '') ?>"
                 @input="valid=$el.checkValidity()">
-              <?php if (flash_has('errors', 'organization')): ?>
-                <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'organization') ?></strong>
+              <?php if (flash_has('errors', 'contact_number')): ?>
+                <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'contact_number') ?></strong>
               <?php endif ?>
             </div>
-            <div x-data="{valid:false}">
+            <div x-data="{valid:false}" class="mb-3">
+              <label for="is_indigenous" class="form-label">Are you a member of an indigenous group?</label>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="is_indigenous"
+                  name="is_indigenous"
+                  value="0"
+                  <?= !isset($_SESSION['register_is_indigenous']) || !$_SESSION['register_is_indigenous'] ? 'checked' : '' ?>
+                  required>
+                <label class="form-check-label" for="is_indigenous">
+                  No
+                </label>
+              </div>
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="is_indigenous"
+                  name="is_indigenous"
+                  <?= isset($_SESSION['register_is_indigenous']) && $_SESSION['register_is_indigenous'] ? 'checked' : '' ?>
+                  value="1"
+                  required>
+                <label class="form-check-label" for="is_indigenous">
+                  Yes
+                </label>
+              </div>
+              <?php if (flash_has('errors', 'is_indigenous')): ?>
+                <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'is_indigenous') ?></strong>
+              <?php endif ?>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header">
+            Professional Information
+          </div>
+          <div class="card-body">
+            <div x-data="{valid:false}" class="mb-3">
+              <label for="affiliation" class="form-label">Affiliation</label>
+              <input
+                type="text"
+                class="form-control"
+                id="affiliation"
+                name="affiliation"
+                required
+                value="<?= htmlspecialchars($_SESSION['register_affiliation'] ?? '') ?>"
+                @input="valid=$el.checkValidity()">
+              <?php if (flash_has('errors', 'affiliation')): ?>
+                <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'affiliation') ?></strong>
+              <?php endif ?>
+            </div>
+            <div x-data="{valid:false}" class="mb-3">
               <label for="position" class="form-label">Position</label>
               <input
                 type="text"
@@ -107,11 +186,46 @@
                 id="position"
                 name="position"
                 required
-                autocomplete="off"
                 value="<?= htmlspecialchars($_SESSION['register_position'] ?? '') ?>"
                 @input="valid=$el.checkValidity()">
               <?php if (flash_has('errors', 'position')): ?>
                 <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'position') ?></strong>
+              <?php endif ?>
+            </div>
+            <div x-data="{valid:false}" class="mb-3">
+              <label for="type" class="form-label">Type</label>
+              <input
+                type="text"
+                class="form-control"
+                id="type"
+                name="type"
+                required
+                value="<?= htmlspecialchars($_SESSION['register_type'] ?? '') ?>"
+                @input="valid=$el.checkValidity()">
+              <?php if (flash_has('errors', 'type')): ?>
+                <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'type') ?></strong>
+              <?php endif ?>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header">
+            Event Registration Details
+          </div>
+          <div class="card-body">
+            <div x-data="{valid:false}" class="mb-3">
+              <label for="event_id" class="form-label">Event ID</label>
+              <input
+                type="number"
+                class="form-control"
+                id="event_id"
+                name="event_id"
+                required
+                value="<?= htmlspecialchars($_SESSION['register_event_id'] ?? '') ?>"
+                @input="valid=$el.checkValidity()">
+              <?php if (flash_has('errors', 'event_id')): ?>
+                <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'event_id') ?></strong>
               <?php endif ?>
             </div>
           </div>
