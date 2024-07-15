@@ -63,6 +63,8 @@
         }, $timeslots);
 
         $booths = execute('SELECT booth_id as id, topic from Booths')->fetchAll();
+        $count = BoothRegistration::count_summary();
+
 
         foreach ($timeslots as $i => $t):
         ?>
@@ -79,11 +81,18 @@
               <button type="button" x-cloak :class="opt==null && 'opacity-0'" :tabindex="opt == null ? -1 : 0" @click="opt=null" class="btn btn-sm btn-outline-primary ms-auto">Clear</button>
             </div>
             <div class="card-body">
-              <?php foreach ($booths as $j => $b): ?>
-                <div class="form-check">
+              <?php foreach ($booths as $j => $b):
+                $rem_slots = MAX_SLOTS - ($count[$t['id']][$b['id']] ?? 0);
+              ?>
+                <div class="form-check d-flex">
                   <input
                     <?php if ($b['id'] == ($_SESSION['register_booths'][$t['id']] ?? '0')): ?>
                     x-init="setTimeout(() => {opt='<?= $b['id'] ?>'}, 0)"
+                    <?php endif ?>
+                    <?php if ($rem_slots < 1):  ?>
+                    disabled
+                    <?php else: ?>
+                    :disabled="opt != $el.value && sel.includes($el.value)"
                     <?php endif ?>
                     x-bind="input"
                     x-model.fill="opt"
@@ -92,9 +101,12 @@
                     name="booths[<?= $t['id'] ?>]" id="r_<?= $t['id'] ?>_<?= $b['id'] ?>"
                     value="<?= $b['id'] ?>"
                     required>
-                  <label class="form-check-label" for="r_<?= $t['id'] ?>_<?= $b['id'] ?>">
+                  <label class="ms-2 form-check-label d-block" for="r_<?= $t['id'] ?>_<?= $b['id'] ?>">
                     <?= $b['topic'] ?>
                   </label>
+                  <small class="ms-auto">
+                    <?= $rem_slots ?> / <?= MAX_SLOTS ?>
+                  </small>
                 </div>
               <?php endforeach ?>
               <?php if (flash_has('errors', $t['id'])): ?>

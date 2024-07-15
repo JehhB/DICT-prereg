@@ -3,9 +3,6 @@ function radio(next_target) {
     opt: null,
 
     input: {
-      [':disabled']() {
-        return this.opt != this.$el.value && this.sel.includes(this.$el.value);
-      },
       ['@change']() {
         document.getElementById(next_target).scrollIntoView({
           behavior: 'smooth'

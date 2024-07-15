@@ -38,4 +38,28 @@ class BoothRegistration
     $boothReg->booth_id = $booth_id;
     return $boothReg;
   }
+
+  public static function count_summary(): array
+  {
+    $query = "SELECT timeslot_id, booth_id, COUNT(*) as count 
+                  FROM BoothRegistration 
+                  GROUP BY timeslot_id, booth_id";
+
+    $stmt = execute($query);
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $counts = [];
+    foreach ($results as $row) {
+      $timeslot_id = $row['timeslot_id'];
+      $booth_id = $row['booth_id'];
+      $count = $row['count'];
+
+      if (!isset($counts[$timeslot_id])) {
+        $counts[$timeslot_id] = [];
+      }
+      $counts[$timeslot_id][$booth_id] = $count;
+    }
+
+    return $counts;
+  }
 }
