@@ -12,13 +12,13 @@ INSERT INTO `Timeslots` (`timestart`, `timeend`) VALUES
 
 
 INSERT INTO `Booths` (`topic`, `presentor`) VALUES
-  ('Topic 1', 'Juan Dela Cruz'),
-  ('Topic 2', 'Maria Santos'),
-  ('Topic 3', 'Jose Reyes'),
-  ('Topic 4', 'Ana Garcia'),
-  ('Topic 5', 'Pedro Fernandez'),
-  ('Topic 6', 'Luisa Aquino'),
-  ('Topic 7', 'Carlos Mendoza'),
-  ('Topic 8', 'Rosa Bautista'),
-  ('Topic 9', 'Manuel Lopez'),
-  ('Topic 10', 'Elena Ramos');
+  ('Syntactics Inc.', 'Stephanie Rosalind P. Caragos'),
+  ('Innovuze Solutions, Inc.', ''),
+  ('Support Zebra', 'Maricel Baylosis'),
+  ('Bloop', ''),
+  ('Digital Feet Corporation', ''),
+  ('Innovuze Solutions Inc.', ''),
+  ('Concentrix', 'Chris Caldwell (Global CEO)'),
+  ('Teleperformance Philippines', 'Daniel Julien (Global CEO)'),
+  ('HSI Technologies', ''),
+  ('Qavalo', '');
