@@ -44,13 +44,42 @@
             <h5 class="mb-3">Personal Info</h5>
             <dl class="row">
               <dt class="col-5 col-sm-4 col-md-3">Name</dt>
-              <dd class="col-7 col-sm-8 col-md-9"><?= $_SESSION['register_name'] ?></dd>
+              <dd class="col-7 col-sm-8 col-md-9"><?= htmlspecialchars($_SESSION['register_name'] ?? '') ?></dd>
+
               <dt class="col-5 col-sm-4 col-md-3">Email</dt>
-              <dd class="col-7 col-sm-8 col-md-9"><?= $_SESSION['register_email'] ?></dd>
+              <dd class="col-7 col-sm-8 col-md-9"><?= htmlspecialchars($_SESSION['register_email'] ?? '') ?></dd>
+
+              <dt class="col-5 col-sm-4 col-md-3">Birthday</dt>
+              <dd class="col-7 col-sm-8 col-md-9"><?= htmlspecialchars($_SESSION['register_birthday'] ?? '') ?></dd>
+
+              <dt class="col-5 col-sm-4 col-md-3">Sex</dt>
+              <dd class="col-7 col-sm-8 col-md-9"><?= isset($_SESSION['register_sex']) ? ($_SESSION['register_sex'] === 'M' ? 'Male' : 'Female') : '' ?></dd>
+
+              <dt class="col-5 col-sm-4 col-md-3">Contact Number</dt>
+              <dd class="col-7 col-sm-8 col-md-9"><?= htmlspecialchars($_SESSION['register_contact_number'] ?? '') ?></dd>
+
+              <dt class="col-5 col-sm-4 col-md-3">Belong to indigenous group</dt>
+              <dd class="col-7 col-sm-8 col-md-9"><?= isset($_SESSION['register_is_indigenous']) && $_SESSION['register_is_indigenous'] ? 'Yes' : 'No' ?></dd>
+            </dl>
+
+            <h5 class="mb-3">Professional Info</h5>
+            <dl class="row">
               <dt class="col-5 col-sm-4 col-md-3">Organization</dt>
-              <dd class="col-7 col-sm-8 col-md-9"><?= $_SESSION['register_organization'] ?></dd>
+              <dd class="col-7 col-sm-8 col-md-9"><?= htmlspecialchars($_SESSION['register_organization'] ?? '') ?></dd>
+
               <dt class="col-5 col-sm-4 col-md-3">Position</dt>
-              <dd class="col-7 col-sm-8 col-md-9"><?= $_SESSION['register_position'] ?></dd>
+              <dd class="col-7 col-sm-8 col-md-9"><?= htmlspecialchars($_SESSION['register_position'] ?? '') ?></dd>
+
+              <dt class="col-5 col-sm-4 col-md-3">Type</dt>
+              <dd class="col-7 col-sm-8 col-md-9"><?= htmlspecialchars($_SESSION['register_type'] ?? '') ?></dd>
+            </dl>
+
+            <h5 class="mb-3">Event Registration Details</h5>
+            <dl class="row">
+              <dt class="col-5 col-sm-4 col-md-3">Event Name</dt>
+              <dd class="col-7 col-sm-8 col-md-9"><?= htmlspecialchars($_SESSION['event_name'] ?? '') ?></dd>
+              <dt class="col-5 col-sm-4 col-md-3">Event Venue</dt>
+              <dd class="col-7 col-sm-8 col-md-9"><?= htmlspecialchars($_SESSION['event_venue'] ?? '') ?></dd>
             </dl>
 
             <h5 class="mb-3">Booth schedule</h5>
