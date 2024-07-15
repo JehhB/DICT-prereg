@@ -42,7 +42,8 @@ CREATE TABLE `Booths`(
 CREATE TABLE `Event`(
     `event_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `event_name` VARCHAR(255) NOT NULL,
-    `event_venue` VARCHAR(255) NOT NULL
+    `event_venue` VARCHAR(255) NOT NULL,
+    `prefix` VARCHAR(16) NOT NULL DEFAULT ''
 );
 ALTER TABLE
     `Booths` ADD CONSTRAINT `booths_event_id_foreign` FOREIGN KEY(`event_id`) REFERENCES `Event`(`event_id`);

@@ -64,7 +64,7 @@
 
             <h5 class="mb-3">Professional Info</h5>
             <dl class="row">
-              <dt class="col-5 col-sm-4 col-md-3">affiliation</dt>
+              <dt class="col-5 col-sm-4 col-md-3">Affiliation</dt>
               <dd class="col-7 col-sm-8 col-md-9"><?= htmlspecialchars($_SESSION['register_affiliation'] ?? '') ?></dd>
 
               <dt class="col-5 col-sm-4 col-md-3">Position</dt>

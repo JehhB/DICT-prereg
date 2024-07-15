@@ -64,7 +64,7 @@ require_once __DIR__ . '/src/setup.php';
                     <td><?= htmlspecialchars($row->name) ?></td>
                     <td><?= htmlspecialchars($row->sex) ?></td>
                     <td><?= htmlspecialchars($row->birthday) ?></td>
-                    <td><?= htmlspecialchars($row->getAge()) ?></td>
+                    <td><?= htmlspecialchars($row->get_age()) ?></td>
                     <td><?= htmlspecialchars($row->affiliation) ?></td>
                     <td><?= htmlspecialchars($row->position) ?></td>
                     <td><?= htmlspecialchars($row->type) ?></td>

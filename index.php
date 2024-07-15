@@ -182,7 +182,7 @@ function handle_page_3()
     $db->commit();
 
     clear_registration();
-    redirect_response('./?p=1');
+    redirect_response('./summary.php?s=' . $reg->slug);
   } catch (Exception $e) {
     $db->rollBack();
     $_SESSION['fatal_error'] = ['code' => 500, 'message' => $e->getMessage()];

@@ -5,6 +5,8 @@ class Event
   public mixed $id;
   public string $event_name;
   public string $event_venue;
+  public string $prefix;
+
 
   public static function get_events(): array
   {
@@ -28,6 +30,7 @@ class Event
     $ev->id = $res['event_id'];
     $ev->event_name = $res['event_name'];
     $ev->event_venue = $res['event_venue'];
+    $ev->prefix = $res['prefix'];
     return $ev;
   }
 }

@@ -1,6 +1,6 @@
-INSERT INTO Event (event_name, event_venue) VALUES
-  ('ICT Event Tuguegarao', 'Cagayan State University'),
-  ('ICT Event Cauayan', 'Isabela State University');
+INSERT INTO Event (event_name, event_venue, prefix) VALUES
+  ('ICT Event Tuguegarao', 'Cagayan State University', 'Cagayan24'),
+  ('ICT Event Cauayan', 'Isabela State University', 'Isabela24');
 
 INSERT INTO Timeslots (timestart, timeend, event_id) VALUES
   ('2024-08-05 08:00:00', '2024-08-05 08:30:00', 2),
