@@ -28,7 +28,8 @@ CREATE TABLE `Registrations`(
     `affiliation` VARCHAR(255) NOT NULL,
     `position` VARCHAR(255) NOT NULL,
     `type` VARCHAR(255) NOT NULL,
-    `is_indigenous` BOOLEAN NOT NULL
+    `is_indigenous` BOOLEAN NOT NULL,
+    `slug` VARCHAR(64) NOT NULL
 );
 ALTER TABLE
     `Registrations` ADD UNIQUE `registrations_email_unique`(`email`);
