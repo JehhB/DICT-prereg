@@ -1,3 +1,9 @@
   [x-cloak] {
     display: none !important;
   }
+
+
+  .card-header{
+    background-color: #17153B;
+    color: #FEFBD8;
+  }
