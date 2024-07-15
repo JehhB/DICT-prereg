@@ -57,7 +57,7 @@ class BoothRegistration
       if (!isset($counts[$timeslot_id])) {
         $counts[$timeslot_id] = [];
       }
-      $counts[$timeslot_id][$booth_id] = $count;
+      $counts[(int)$timeslot_id][(int)$booth_id] = (int)$count;
     }
 
     return $counts;

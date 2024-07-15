@@ -17,6 +17,14 @@
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
   <link rel="stylesheet" href="./assets/style.css">
   <script src="./assets/script.js"></script>
+
+  <script id="init-data" type="application/json">
+    <?php
+    $count = BoothRegistration::count_summary();
+    $count['_MAX_SLOTS'] = MAX_SLOTS;
+    echo json_encode($count);
+    ?>
+  </script>
 </head>
 
 <body class="bg-light-subtle">
@@ -49,7 +57,7 @@
       <h1>
         DICT Event Preregistration
       </h1>
-      <form action="#" method="post" x-data="{sel:[]}">
+      <form action="#" method="post" x-data="form('init-data')">
         <?= csrf_field() ?>
 
         <?php
@@ -89,11 +97,7 @@
                     <?php if ($b['id'] == ($_SESSION['register_booths'][$t['id']] ?? '0')): ?>
                     x-init="setTimeout(() => {opt='<?= $b['id'] ?>'}, 0)"
                     <?php endif ?>
-                    <?php if ($rem_slots < 1):  ?>
-                    disabled
-                    <?php else: ?>
-                    :disabled="opt != $el.value && sel.includes($el.value)"
-                    <?php endif ?>
+                    :disabled="(opt != $el.value && sel.includes($el.value)) || isFull('<?= $t['id'] ?>','<?= $b['id'] ?>')"
                     x-bind="input"
                     x-model.fill="opt"
                     class="form-check-input"
@@ -104,8 +108,7 @@
                   <label class="ms-2 form-check-label d-block" for="r_<?= $t['id'] ?>_<?= $b['id'] ?>">
                     <?= $b['topic'] ?>
                   </label>
-                  <small class="ms-auto">
-                    <?= $rem_slots ?> / <?= MAX_SLOTS ?>
+                  <small class="ms-auto" x-text="format('<?= $t['id'] ?>', '<?= $b['id'] ?>')">
                   </small>
                 </div>
               <?php endforeach ?>
