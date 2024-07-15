@@ -18,7 +18,6 @@ function handle_page_1()
   $sanitize_filters = [
     'email' => FILTER_SANITIZE_EMAIL,
     'name' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-    'organization' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
     'position' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
     'sex' => FILTER_DEFAULT,
     'birthday' => FILTER_DEFAULT,
@@ -32,7 +31,6 @@ function handle_page_1()
   $validate_filters = [
     'email' => FILTER_VALIDATE_EMAIL,
     'name' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/\S+/']],
-    'organization' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/\S+/']],
     'position' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/\S+/']],
     'sex' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/^[MF]$/']],
     'birthday' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/^\d{4}-\d{2}-\d{2}$/']],
@@ -50,20 +48,19 @@ function handle_page_1()
   $error_message = [
     'email' => 'This is not a valid email address',
     'name' => 'Name must be provided',
-    'organization' => 'Organization name must be provided',
     'position' => 'Position must be provided',
     'sex' => 'Invalid sex value',
-    'birthday' => 'Invalid birthday format (YYYY-MM-DD)',
+    'birthday' => 'Invalid birthday',
     'contact_number' => 'Invalid contact number',
     'affiliation' => 'Affiliation must be provided',
     'type' => 'Type must be provided',
-    'event_id' => 'Event ID must be a valid integer',
+    'event_id' => 'Choose a valid event',
     'is_indigenous' => 'Choose a valid value',
   ];
 
   $has_error = false;
   foreach ($input as $k => $v) {
-    if ($v === false || $v === null) {
+    if (($k !== "is_indigenous" && $v === false) || $v === null) {
       flash_set('errors', $k, $error_message[$k]);
       $has_error = true;
     } else {
@@ -73,6 +70,11 @@ function handle_page_1()
 
   if (Registration::email_exist($input['email'])) {
     flash_set('errors', 'email', 'Email is already registered');
+    $has_error = true;
+  }
+
+  if (is_null(Event::find($input['event_id']))) {
+    flash_set('errors', 'event_id', "Event_doesn't exist");
     $has_error = true;
   }
 
@@ -100,7 +102,9 @@ function handle_page_2()
   }
 
   // Check if there is valid booth selection is given
-  $timeslots = execute("SELECT timeslot_id FROM Timeslots")->fetchAll(PDO::FETCH_COLUMN);
+  $timeslots = execute("SELECT timeslot_id FROM Timeslots WHERE event_id = ?", [
+    $_SESSION['register_event_id']
+  ])->fetchAll(PDO::FETCH_COLUMN);
   $_SESSION['register_booths'] = $booths;
 
   $has_error = false;
@@ -113,7 +117,9 @@ function handle_page_2()
   }
 
 
-  $validBoothIds = execute("SELECT booth_id FROM Booths")->fetchAll(PDO::FETCH_COLUMN);
+  $validBoothIds = execute("SELECT booth_id FROM Booths WHERE event_id = ?", [
+    $_SESSION['register_event_id']
+  ])->fetchAll(PDO::FETCH_COLUMN);
   foreach ($booths as $k => $id) {
     if (array_search((int)$id, $validBoothIds) === false) {
       $has_error = true;
@@ -161,8 +167,14 @@ function handle_page_3()
     $reg = Registration::insert(
       $_SESSION['register_name'],
       $_SESSION['register_email'],
-      $_SESSION['register_organization'],
-      $_SESSION['register_position']
+      $_SESSION['register_position'],
+      $_SESSION['register_sex'],
+      $_SESSION['register_birthday'],
+      $_SESSION['register_contact_number'],
+      $_SESSION['register_affiliation'],
+      $_SESSION['register_type'],
+      $_SESSION['register_event_id'],
+      $_SESSION['register_is_indigenous']
     );
 
     $reg->register_booths($_SESSION['register_booths']);

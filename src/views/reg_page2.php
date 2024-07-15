@@ -62,7 +62,10 @@
 
         <?php
         $timeslot_titles = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"];
-        $timeslots = execute('SELECT timeslot_id as id, timestart, timeend FROM Timeslots')->fetchAll();
+        $timeslots = execute('SELECT timeslot_id as id, timestart, timeend FROM Timeslots WHERE event_id = ?', [
+          $_SESSION['register_event_id']
+        ])->fetchAll();
+
         $timeslots = array_map(function ($v) {
           return array_merge($v, [
             'start' => (new DateTime($v['timestart']))->format('M d h:ia'),
@@ -70,7 +73,9 @@
           ]);
         }, $timeslots);
 
-        $booths = execute('SELECT booth_id as id, topic from Booths')->fetchAll();
+        $booths = execute('SELECT booth_id as id, topic from Booths WHERE event_id = ?', [
+          $_SESSION['register_event_id']
+        ])->fetchAll();
         $count = BoothRegistration::count_summary();
 
 
@@ -120,8 +125,8 @@
         <?php endforeach ?>
 
         <div id="c_<?= count($timeslots) ?>" class="row px-3 gap-2">
-          <input type="submit" name="prev" class="btn btn-dark col-auto" value="Prev">
-          <input type="submit" name="next" class="btn btn-dark col-auto" value="Next">
+          <input type="submit" @click="$root.noValidate = true" name="prev" class="btn btn-primary col-auto" value="Prev">
+          <input type="submit" @click="$root.noValidate = false" name="next" class="btn btn-primary col-auto" value="Next">
           <button type="button" class="btn btn-outline-primary col-auto ms-auto" @click="sel=[]">Clear selection</button>
         </div>
 

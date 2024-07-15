@@ -49,7 +49,7 @@
       <h1>
         DICT Event Preregistration
       </h1>
-      <form action="#" method="post" novalidate>
+      <form action="#" method="post">
         <?= csrf_field() ?>
 
         <div class="card mb-4 shadow-sm">
@@ -132,7 +132,7 @@
                   type="radio"
                   id="is_indigenous"
                   name="is_indigenous"
-                  value="0"
+                  value="no"
                   <?= !isset($_SESSION['register_is_indigenous']) || !$_SESSION['register_is_indigenous'] ? 'checked' : '' ?>
                   required>
                 <label class="form-check-label" for="is_indigenous">
@@ -146,7 +146,7 @@
                   id="is_indigenous"
                   name="is_indigenous"
                   <?= isset($_SESSION['register_is_indigenous']) && $_SESSION['register_is_indigenous'] ? 'checked' : '' ?>
-                  value="1"
+                  value="yes"
                   required>
                 <label class="form-check-label" for="is_indigenous">
                   Yes
@@ -215,15 +215,27 @@
           </div>
           <div class="card-body">
             <div x-data="{valid:false}" class="mb-3">
-              <label for="event_id" class="form-label">Event ID</label>
-              <input
-                type="number"
-                class="form-control"
-                id="event_id"
-                name="event_id"
-                required
-                value="<?= htmlspecialchars($_SESSION['register_event_id'] ?? '') ?>"
-                @input="valid=$el.checkValidity()">
+
+
+              <label for="event_id" class="form-label">What event do you want to join?</label>
+
+              <?php foreach (Event::get_events() as $ev) : ?>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    id="ev_<?= $ev->id ?>"
+                    name="event_id"
+                    value="<?= $ev->id ?>"
+                    @input="valid=$el.checkValidity()"
+                    <?php if ($ev->id == ($_SESSION['register_event_id'] ?? 0)) : ?> checked <?php endif ?>
+                    required>
+                  <label class="form-check-label" for="ev_<?= $ev->id ?>">
+                    <?= $ev->event_name ?> <em>@<?= $ev->event_venue ?></em>
+                  </label>
+                </div>
+              <?php endforeach ?>
+
               <?php if (flash_has('errors', 'event_id')): ?>
                 <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'event_id') ?></strong>
               <?php endif ?>

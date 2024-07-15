@@ -38,7 +38,7 @@
           </div>
           <div class="card-body">
             <p class="alert alert-warning">
-              Please review your registration details carefully. You are not allowed to modify it afterwards.
+              Please review your registration details carefully. You are not allowed to modify your personal details afterwards.
             </p>
 
             <h5 class="mb-3">Personal Info</h5>
@@ -64,8 +64,8 @@
 
             <h5 class="mb-3">Professional Info</h5>
             <dl class="row">
-              <dt class="col-5 col-sm-4 col-md-3">Organization</dt>
-              <dd class="col-7 col-sm-8 col-md-9"><?= htmlspecialchars($_SESSION['register_organization'] ?? '') ?></dd>
+              <dt class="col-5 col-sm-4 col-md-3">affiliation</dt>
+              <dd class="col-7 col-sm-8 col-md-9"><?= htmlspecialchars($_SESSION['register_affiliation'] ?? '') ?></dd>
 
               <dt class="col-5 col-sm-4 col-md-3">Position</dt>
               <dd class="col-7 col-sm-8 col-md-9"><?= htmlspecialchars($_SESSION['register_position'] ?? '') ?></dd>
@@ -76,16 +76,19 @@
 
             <h5 class="mb-3">Event Registration Details</h5>
             <dl class="row">
+              <?php $event =  Event::find($_SESSION['register_event_id']) ?>
               <dt class="col-5 col-sm-4 col-md-3">Event Name</dt>
-              <dd class="col-7 col-sm-8 col-md-9"><?= htmlspecialchars($_SESSION['event_name'] ?? '') ?></dd>
+              <dd class="col-7 col-sm-8 col-md-9"><?= htmlspecialchars($event->event_name) ?></dd>
               <dt class="col-5 col-sm-4 col-md-3">Event Venue</dt>
-              <dd class="col-7 col-sm-8 col-md-9"><?= htmlspecialchars($_SESSION['event_venue'] ?? '') ?></dd>
+              <dd class="col-7 col-sm-8 col-md-9"><?= htmlspecialchars($event->event_venue) ?></dd>
             </dl>
 
             <h5 class="mb-3">Booth schedule</h5>
             <dl class="row">
               <?php
-              $timeslots = execute('SELECT timeslot_id as id, timestart, timeend FROM Timeslots')->fetchAll();
+              $timeslots = execute('SELECT timeslot_id as id, timestart, timeend FROM Timeslots WHERE event_id = ?', [
+                $_SESSION['register_event_id']
+              ])->fetchAll();
               $timeslots = array_map(function ($v) {
                 return array_merge($v, [
                   'start' => (new DateTime($v['timestart']))->format('H:i'),
