@@ -1,3 +1,39 @@
-  [x-cloak] {
-    display: none !important;
-  }
+[x-cloak] {
+  display: none !important;
+}
+
+:root {
+  --bs-secondary-rgb: 144, 155, 212;
+}
+
+.btn-primary {
+  --bs-btn-bg: #324296;
+  --bs-btn-border-color: #324296;
+  --bs-btn-hover-bg: #2a3880;
+  --bs-btn-hover-border-color: #263478;
+  --bs-btn-active-bg: #263478;
+}
+
+.alert-info {
+  --bs-alert-color: #000f59;
+  --bs-alert-bg: #cbd2f7;
+  --bs-alert-border-color: #99a8f2;
+}
+
+.form-control:focus {
+  border-color: #314296;
+}
+
+.form-check-input:checked {
+  background-color: #314296;
+  border-color: #314296;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: #324296;
+  --bs-btn-border-color: #324296;
+  --bs-btn-hover-bg: #314296;
+  --bs-btn-hover-border-color: #314296;
+  --bs-btn-active-bg: #314296;
+  --bs-btn-active-border-color: #314296;
+}

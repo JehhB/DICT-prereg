@@ -40,8 +40,11 @@
 
   <main class="container my-3 my-sm-4">
     <div class="col col-md-11 col-lg-9 col-xl-8 col-xxl-7 mx-auto">
-      <div class="card mb-3 shadow-sm">
-        <img src="https://placehold.co/970x250.png?text=Banner+Image" class="card-img-top" alt="Banner">
+      <div class="card mb-3 shadow-sm" style="max-height: 250px;">
+        <video autoplay loop muted playsinline>
+          <source src="./assets/banner.mp4" type="video/mp4">
+          Join DICT HIMS Career and Job Fair
+        </video>
       </div>
 
       <h1>
