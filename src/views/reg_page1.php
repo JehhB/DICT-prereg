@@ -76,6 +76,40 @@
 
         <div class="card mb-4 shadow-sm">
           <div class="card-header bg-secondary">
+            Event Registration Details
+          </div>
+          <div class="card-body">
+            <div x-data="{valid:false}" class="mb-3">
+
+
+              <label for="event_id" class="form-label">What event do you want to join?</label>
+              <div class="row p-3 gap-3" x-data="{selected: <?= $_SESSION['register_event_id'] ?? 0 ?>}">
+                <?php foreach (Event::get_events() as $ev): ?>
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary col py-5 d-flex flex-column"
+                    :class="{'active': <?= $ev->id ?> == selected}"
+                    @click="selected = <?= $ev->id ?>">
+                    <span>
+                      <?= $ev->event_name ?>
+                    </span>
+                    <em>
+                      @ <?= $ev->event_venue ?>
+                    </em>
+                  </button>
+                <?php endforeach ?>
+                <input type="hidden" name="event_id" :value="selected">
+              </div>
+
+              <?php if (flash_has('errors', 'event_id')): ?>
+                <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'event_id') ?></strong>
+              <?php endif ?>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header bg-secondary">
             Personal Information
           </div>
           <div class="card-body">
@@ -225,13 +259,12 @@
               <input
                 type="hidden"
                 class="form-control"
-                id="type"
                 name="type"
                 :value="value">
 
               <template x-for="(option, i) in options">
                 <div class="form-check" x-data="{id: $id('desc')}">
-                  <input class="form-check-input" type="checkbox" :id="id" x-bind="input" :checked="selected.has(option)" :data-desc-value="option">
+                  <input class="form-check-input" type="checkbox" :id="id" x-bind="input" :checked="selected.includes(option)" :data-desc-value="option">
                   <label class="form-check-label text-capitalize" :for="id" x-text="option">
                   </label>
                 </div>
@@ -245,45 +278,12 @@
                 placeholder="Other (e.g. employer)">
 
               <?php if (flash_has('errors', 'type')): ?>
-                <strong x-transition x-show.important="value.length > 0" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'type') ?></strong>
+                <strong x-transition x-show.important="value.length == 0" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'type') ?></strong>
               <?php endif ?>
             </div>
           </div>
         </div>
 
-        <div class="card mb-4 shadow-sm">
-          <div class="card-header bg-secondary">
-            Event Registration Details
-          </div>
-          <div class="card-body">
-            <div x-data="{valid:false}" class="mb-3">
-
-
-              <label for="event_id" class="form-label">What event do you want to join?</label>
-
-              <?php foreach (Event::get_events() as $ev) : ?>
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    id="ev_<?= $ev->id ?>"
-                    name="event_id"
-                    value="<?= $ev->id ?>"
-                    @input="valid=$el.checkValidity()"
-                    <?php if ($ev->id == ($_SESSION['register_event_id'] ?? 0)) : ?> checked <?php endif ?>
-                    required>
-                  <label class="form-check-label" for="ev_<?= $ev->id ?>">
-                    <?= $ev->event_name ?> <em>@<?= $ev->event_venue ?></em>
-                  </label>
-                </div>
-              <?php endforeach ?>
-
-              <?php if (flash_has('errors', 'event_id')): ?>
-                <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'event_id') ?></strong>
-              <?php endif ?>
-            </div>
-          </div>
-        </div>
 
 
         <div class="row px-3">

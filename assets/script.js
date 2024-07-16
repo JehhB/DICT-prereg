@@ -71,32 +71,33 @@ function radio(next_target, init) {
   };
 }
 
-/**
-  * @param init string
-  */
 function description(init = '') {
+  const _options = ['student', 'job seeker', 'out of school youth', 'fresh graduate'];
+
   return {
-    selected: new Set(init.split(',').map(x => x.trim).filter(x => x.length > 0)),
-    options: ['student', 'job seeker', 'out of school youth', 'fresh graduate'],
+    selected: [],
+    options: _options,
     others: '',
 
     init() {
-      const options = new Set(this.options);
-      const other = new Set(this.selected).difference(options);
+      const options = new Set(_options);
+      const other = new Set(init.split(',').map(x => x.trim()).filter(x => x.length > 0)).difference(options);
+
       this.others = Array.from(other).join(', ');
+      this.selected = init.split(',').map(x => x.trim()).filter(x => _options.includes(x));
     },
 
-    get value() {
-      return Array.from(this.selected).map(x => x.toLowerCase()).join(',');
+    value() {
+      return [...this.selected.map(x => x.toLowerCase()), this.others].join(',');
     },
 
     input: {
       ['@change']() {
         const value = this.$el.dataset.descValue;
         if (this.$el.checked) {
-          if (!this.selected.has(value)) this.selected.add(value);
+          if (!this.selected.includes(value)) this.selected.push(value);
         } else {
-          this.selected.delete(value);
+          this.selected = this.selected.filter(v => v != value);
         }
       },
     },
