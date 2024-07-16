@@ -81,11 +81,9 @@ function description(init = '') {
     others: '',
 
     init() {
-      const otherValues = this.selected.difference(new Set(this.options));
-      this.others = Array.from(otherValues).join(', ');
-      this.$watch('others', (others) => {
-        console.log(others);
-      });
+      const options = new Set(this.options);
+      const other = new Set(this.selected).difference(options);
+      this.others = Array.from(other).join(', ');
     },
 
     get value() {
@@ -93,12 +91,8 @@ function description(init = '') {
     },
 
     input: {
-      [':checked']() {
-        return this.selected.has(this.$el.value);
-      },
-
       ['@change']() {
-        const value = this.$el.value;
+        const value = this.$el.dataset.descValue;
         if (this.$el.checked) {
           if (!this.selected.has(value)) this.selected.add(value);
         } else {

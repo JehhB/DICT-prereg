@@ -223,16 +223,16 @@
               <?php endif ?>>
               <label for="type" class="form-label">Description</label>
               <input
-                type="text"
+                type="hidden"
                 class="form-control"
                 id="type"
                 name="type"
                 :value="value">
 
-              <template x-for="option in options">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="flexCheckChecked" x-bind="input" :value="option">
-                  <label class="form-check-label text-capitalize" for="flexCheckChecked" x-text="option">
+              <template x-for="(option, i) in options">
+                <div class="form-check" x-data="{id: $id('desc')}">
+                  <input class="form-check-input" type="checkbox" :id="id" x-bind="input" :checked="selected.has(option)" :data-desc-value="option">
+                  <label class="form-check-label text-capitalize" :for="id" x-text="option">
                   </label>
                 </div>
               </template>
@@ -241,7 +241,8 @@
                 type="text"
                 class="form-control"
                 id="type"
-                x-model="others">
+                x-model="others"
+                placeholder="Other (e.g. employer)">
 
               <?php if (flash_has('errors', 'type')): ?>
                 <strong x-transition x-show.important="value.length > 0" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'type') ?></strong>
