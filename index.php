@@ -2,6 +2,13 @@
 
 require_once __DIR__ . '/src/setup.php';
 
+if (isset($_GET['accept_data_privacy'])) {
+  $_SESSION['register_privacy'] = true;
+  http_response_code(200);
+  exit();
+}
+
+
 $page = $_GET['p'] ?? 1;
 
 function clear_registration()

@@ -12,7 +12,38 @@
 
 <body class="bg-light-subtle">
 
-  <?php if (flash_has('errors', 'form')): ?>
+  <?php if (!isset($_SESSION['register_privacy'])): ?>
+    <div class="modal modal-lg fade" tabindex="-1" data-bs-backdrop="static" x-data x-init="new bootstrap.Modal($el).show()">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Data Privacy Context</h5>
+          </div>
+          <div class="modal-body">
+            <p>
+              DATA PRIVACY CONTENT
+              The DICT recognizes their responsibilities under the <strong>Republic Act No. 10173 (Act)</strong>, also
+              known as the <strong>Data Privacy Act of 2012</strong>. The personal data obtained from this form is
+              analyzed, entered, and stored within the Department’s authorized information and communications system and
+              will only be accessed by the <strong>*DICT UNIT NAME*</strong> authorized personnel. The <strong>*DICT
+                UNIT NAME*</strong> Team has instituted appropriate organizational, technical, and physical security
+              measures to ensure the protection of the participants’ personal data.
+            </p>
+            <p>
+              By pressing <strong>"I Agree,"</strong> I am providing consent to the <strong>DICT</strong> and
+              <strong>*DICT UNIT NAME*</strong> to gather and process my information for my participation in this
+              training. <strong>My details will not be disclosed to any third-party organizations or affiliates of
+                DICT and its partners</strong>. The information will be exclusively utilized for reporting
+              quantitative data of attendees and sending invitations for participation in the specified activity.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="fetch('./?accept_data_privacy=true')">I Agree</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <?php elseif (flash_has('errors', 'form')): ?>
     <div class="modal fade" tabindex="-1" x-data x-init="new bootstrap.Modal($el).show()">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -124,7 +155,7 @@
                   id="is_indigenous"
                   name="is_indigenous"
                   value="no"
-                  <?= !isset($_SESSION['register_is_indigenous']) || !$_SESSION['register_is_indigenous'] ? 'checked' : '' ?>
+                  <?= isset($_SESSION['register_is_indigenous']) && !$_SESSION['register_is_indigenous'] ? 'checked' : '' ?>
                   required>
                 <label class="form-check-label" for="is_indigenous">
                   No
@@ -234,35 +265,6 @@
           </div>
         </div>
 
-        <div class="card mb-4 shadow-sm">
-          <div class="card-header">
-            Data Privacy Context
-          </div>
-          <div class="card-body">
-            <p>
-              DATA PRIVACY CONTENT
-              The DICT recognizes their responsibilities under the <strong>Republic Act No. 10173 (Act)</strong>, also
-              known as the <strong>Data Privacy Act of 2012</strong>. The personal data obtained from this form is
-              analyzed, entered, and stored within the Department’s authorized information and communications system and
-              will only be accessed by the <strong>*DICT UNIT NAME*</strong> authorized personnel. The <strong>*DICT
-                UNIT NAME*</strong> Team has instituted appropriate organizational, technical, and physical security
-              measures to ensure the protection of the participants’ personal data.
-            </p>
-            <p>
-              By selecting <strong>"I Agree,"</strong> I am providing consent to the <strong>DICT</strong> and
-              <strong>*DICT UNIT NAME*</strong> to gather and process my information for my participation in this
-              training. <strong>My details will not be disclosed to any third-party organizations or affiliates of
-                DICT and its partners</strong>. The information will be exclusively utilized for reporting
-              quantitative data of attendees and sending invitations for participation in the specified activity.
-            </p>
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="privacyAgree" required>
-              <label class="form-check-label" for="privacyAgree">
-                I Agree
-              </label>
-            </div>
-          </div>
-        </div>
 
         <div class="row px-3">
           <button type="submit" class="btn btn-primary col-auto">Next</button>
