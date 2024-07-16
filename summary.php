@@ -93,7 +93,7 @@ if (isset($_POST['save'])) {
         $booth_registration = array_filter($current, function ($b) use ($timeslot_id) {
           return $b['timeslot_id'] == $timeslot_id;
         });
-        if (count($booth_registration) > 0) continue;
+        if (count($booth_registration) == 0) continue;
 
         $id = array_pop($booth_registration)['booth_registration_id'];
         if (!isset($_POST["booths"][$id])) continue;
