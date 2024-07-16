@@ -60,7 +60,7 @@ function handle_page_1()
     'birthday' => 'Invalid birthday',
     'contact_number' => 'Invalid contact number',
     'affiliation' => 'Affiliation must be provided',
-    'type' => 'Type must be provided',
+    'type' => 'Description must be provided',
     'event_id' => 'Choose a valid event',
     'is_indigenous' => 'Choose a valid value',
   ];

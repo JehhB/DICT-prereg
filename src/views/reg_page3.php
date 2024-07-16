@@ -22,7 +22,7 @@
       <form action="#" method="post">
         <?= csrf_field() ?>
         <div class="card mb-4 shadow-sm">
-          <div class="card-header">
+          <div class="card-header bg-secondary">
             Registration Summary
           </div>
           <div class="card-body">

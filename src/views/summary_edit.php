@@ -72,7 +72,7 @@ $count = BoothRegistration::count_summary();
             x-data="radio('c_<?= $i + 1 ?>', '<?= $t['booth_id'] ?>')"
             x-modelable="opt"
             x-model="sel[<?= $i ?>]">
-            <div class="card-header d-flex align-items-center">
+            <div class="card-header bg-secondary d-flex align-items-center">
               <span>
                 <?= $timeslot_titles[$i] ?> Timeslot <em>(<?= $t['start'] ?> - <?= $t['end'] ?>)</em>
               </span>

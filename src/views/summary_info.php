@@ -19,7 +19,7 @@ $reg = Registration::find($_GET['s']);
     </h1>
 
     <div class="card mb-4 shadow-sm">
-      <div class="card-header">
+      <div class="card-header bg-secondary">
         Personal Info
       </div>
       <div class="card-body">
@@ -38,7 +38,7 @@ $reg = Registration::find($_GET['s']);
 
 
     <div class="card mb-4 shadow-sm">
-      <div class="card-header">
+      <div class="card-header bg-secondary">
         Event Registration Details
       </div>
       <div class="card-body">
@@ -54,7 +54,7 @@ $reg = Registration::find($_GET['s']);
     </div>
 
     <div class="card mb-4 shadow-sm">
-      <div class="card-header d-flex">
+      <div class="card-header bg-secondary d-flex">
         <span>
           Booth schedule
         </span>

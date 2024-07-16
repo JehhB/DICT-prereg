@@ -71,8 +71,47 @@ function radio(next_target, init) {
   };
 }
 
+/**
+  * @param init string
+  */
+function description(init = '') {
+  return {
+    selected: new Set(init.split(',').map(x => x.trim).filter(x => x.length > 0)),
+    options: ['student', 'job seeker', 'out of school youth', 'fresh graduate'],
+    others: '',
+
+    init() {
+      const otherValues = this.selected.difference(new Set(this.options));
+      this.others = Array.from(otherValues).join(', ');
+      this.$watch('others', (others) => {
+        console.log(others);
+      });
+    },
+
+    get value() {
+      return Array.from(this.selected).map(x => x.toLowerCase()).join(',');
+    },
+
+    input: {
+      [':checked']() {
+        return this.selected.has(this.$el.value);
+      },
+
+      ['@change']() {
+        const value = this.$el.value;
+        if (this.$el.checked) {
+          if (!this.selected.has(value)) this.selected.add(value);
+        } else {
+          this.selected.delete(value);
+        }
+      },
+    },
+  };
+}
+
 document.addEventListener('alpine:init', () => {
   Alpine.data('radio', radio);
   Alpine.data('form', form);
+  Alpine.data('description', description);
 })
 

@@ -75,7 +75,7 @@
         <?= csrf_field() ?>
 
         <div class="card mb-4 shadow-sm">
-          <div class="card-header">
+          <div class="card-header bg-secondary">
             Personal Information
           </div>
           <div class="card-body">
@@ -182,7 +182,7 @@
         </div>
 
         <div class="card mb-4 shadow-sm">
-          <div class="card-header">
+          <div class="card-header bg-secondary">
             Professional Information
           </div>
           <div class="card-body">
@@ -214,25 +214,44 @@
                 <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'position') ?></strong>
               <?php endif ?>
             </div>
-            <div x-data="{valid:false}" class="mb-3">
-              <label for="type" class="form-label">Type</label>
+            <div
+              class="mb-3"
+              <?php if (isset($_SESSION['register_type'])): ?>
+              x-data="description('<?= htmlspecialchars(str_replace("'", "", $_SESSION['register_type'])) ?>')"
+              <?php else: ?>
+              x-data="description()"
+              <?php endif ?>>
+              <label for="type" class="form-label">Description</label>
               <input
                 type="text"
                 class="form-control"
                 id="type"
                 name="type"
-                required
-                value="<?= htmlspecialchars($_SESSION['register_type'] ?? '') ?>"
-                @input="valid=$el.checkValidity()">
+                :value="value">
+
+              <template x-for="option in options">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="flexCheckChecked" x-bind="input" :value="option">
+                  <label class="form-check-label text-capitalize" for="flexCheckChecked" x-text="option">
+                  </label>
+                </div>
+              </template>
+
+              <input
+                type="text"
+                class="form-control"
+                id="type"
+                x-model="others">
+
               <?php if (flash_has('errors', 'type')): ?>
-                <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'type') ?></strong>
+                <strong x-transition x-show.important="value.length > 0" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'type') ?></strong>
               <?php endif ?>
             </div>
           </div>
         </div>
 
         <div class="card mb-4 shadow-sm">
-          <div class="card-header">
+          <div class="card-header bg-secondary">
             Event Registration Details
           </div>
           <div class="card-body">
