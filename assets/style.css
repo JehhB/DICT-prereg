@@ -6,6 +6,10 @@
   --bs-secondary-rgb: 144, 155, 212;
 }
 
+.card {
+  scroll-margin: 20px;
+}
+
 .btn-primary {
   --bs-btn-bg: #324296;
   --bs-btn-border-color: #324296;

@@ -12,6 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     include_once __DIR__ . '/src/views/summary_edit.php';
   } else {
     include_once __DIR__ . '/src/views/summary_info.php';
+    $reg = Registration::find($_GET['s']);
+    execute('DELETE FROM Registrations WHERE registration_id = ?', [$reg->id]);
   }
   exit();
 }
