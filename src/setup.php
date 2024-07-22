@@ -1,8 +1,12 @@
 <?php
+require __DIR__ . '/vendor/autoload.php';
+
+$env = parse_ini_file(__DIR__ . '/.env');
 
 require_once __DIR__ . '/lib/database.php';
 require_once __DIR__ . '/lib/csrf.php';
 require_once __DIR__ . '/lib/flash.php';
+require_once __DIR__ . '/lib/email.php';
 
 require_once __DIR__ . '/entity/Registration.php';
 require_once __DIR__ . '/entity/BoothRegistration.php';

@@ -29,7 +29,8 @@ CREATE TABLE `Registrations`(
     `position` VARCHAR(255) NOT NULL,
     `type` VARCHAR(255) NOT NULL,
     `is_indigenous` BOOLEAN NOT NULL,
-    `slug` VARCHAR(64) NOT NULL
+    `slug` VARCHAR(64) NOT NULL,
+    `email_sent` BOOLEAN NOT NULL DEFAULT FALSE
 );
 ALTER TABLE
     `Registrations` ADD UNIQUE `registrations_email_unique`(`email`);
@@ -45,6 +46,7 @@ CREATE TABLE `Event`(
     `event_venue` VARCHAR(255) NOT NULL,
     `prefix` VARCHAR(16) NOT NULL DEFAULT ''
 );
+
 ALTER TABLE
     `Booths` ADD CONSTRAINT `booths_event_id_foreign` FOREIGN KEY(`event_id`) REFERENCES `Event`(`event_id`);
 ALTER TABLE

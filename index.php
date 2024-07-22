@@ -8,7 +8,6 @@ if (isset($_GET['accept_data_privacy'])) {
   exit();
 }
 
-
 $page = $_GET['p'] ?? 1;
 
 function clear_registration()
@@ -188,6 +187,7 @@ function handle_page_3()
 
     $db->commit();
 
+    async_send_email($reg->slug);
     clear_registration();
     $_SESSION['auth_summary'] = $reg->slug;
     redirect_response('./summary.php?s=' . $reg->slug);

@@ -17,6 +17,7 @@ class Registration
   public int $event_id;
   public bool $is_indigenous;
   public string $slug;
+  public bool $email_sent;
 
   static function email_exist(string $email): bool
   {
@@ -77,6 +78,7 @@ class Registration
     $reg->event_id = $event_id;
     $reg->is_indigenous = $is_indigenous;
     $reg->slug = $slug;
+    $reg->email_sent = false;
 
     return $reg;
   }
@@ -100,6 +102,7 @@ class Registration
       $reg->event_id = $r['event_id'];
       $reg->is_indigenous = $r['is_indigenous'];
       $reg->slug = $r['slug'];
+      $reg->email_sent = $r['email_sent'];
       $res[] = $reg;
     }
     return $res;
@@ -124,6 +127,7 @@ class Registration
     $reg->event_id = $r['event_id'];
     $reg->is_indigenous = $r['is_indigenous'];
     $reg->slug = $r['slug'];
+    $reg->email_sent = $r['email_sent'];
 
     return $reg;
   }
@@ -167,5 +171,11 @@ class Registration
           WHERE br.registration_id = ?
           ORDER BY t.timestart ASC';
     return execute($sql, [$this->id])->fetchAll();
+  }
+
+  public function mark_email_sent()
+  {
+    $sql = 'UPDATE Registrations SET email_sent = TRUE WHERE registration_id = ?';
+    execute($sql, [$this->id]);
   }
 }
