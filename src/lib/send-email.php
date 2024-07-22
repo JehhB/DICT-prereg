@@ -6,6 +6,8 @@ require_once __DIR__ . '/../entity/Registration.php';
 
 define('BASEURL', 'http://localhost:8080');
 
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
 use PHPMailer\PHPMailer\PHPMailer;
 
 $env = parse_ini_file(__DIR__ . '/../.env');
@@ -67,6 +69,7 @@ if (php_sapi_name() === 'cli') {
     $event_end = $last_end->format('Ymd\THis');
     $add_to_calendar = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=DICT+HIMAP+Carreer+Roadshow+and+Job+Fair&dates={$event_start}/{$event_end}";
   }
+  $name = $reg->name;
   $summary_link =  BASEURL . '/summary.php?s=' . $reg->slug;
 
   ob_start();
@@ -77,6 +80,15 @@ if (php_sapi_name() === 'cli') {
   include __DIR__ . '/../views/email.raw.php';
   $raw = ob_get_clean();
 
+  $qrOptions = new QROptions([
+    'outputType' => QRCode::OUTPUT_IMAGE_PNG,
+    'eccLevel' => QRCode::ECC_L,
+    'scale' => 5,
+    'imageBase64' => true,
+  ]);
+
+  $qrCode = (new QRCode($qrOptions))->render($summary_link);
+
   try {
     $mail = get_email();
     $mail->addAddress($reg->email, $reg->name);
@@ -86,6 +98,7 @@ if (php_sapi_name() === 'cli') {
     $mail->Body    = $email;
     $mail->AltBody = $raw;
 
+    $mail->addStringEmbeddedImage(base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $qrCode)), "qrcode_cid", "qr_code.png", "base64", "image/png");
     $mail->send();
 
     $reg->mark_email_sent();

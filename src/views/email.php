@@ -88,6 +88,16 @@
         width: 100% !important
       }
 
+      .w-20,
+      .w-20>tbody>tr>td {
+        width: 80px !important
+      }
+
+      .h-20,
+      .h-20>tbody>tr>td {
+        height: 80px !important
+      }
+
       *[class*=s-lg-]>tbody>tr>td {
         font-size: 0 !important;
         line-height: 0 !important;
@@ -167,7 +177,47 @@
                                               </tr>
                                             </tbody>
                                           </table>
-                                          <a href="<?= $summary_link ?? '#' ?>" style="color: #0d6efd;">View or modify schedule</a>
+                                          <a href="<?= $summary_link ?? '#' ?>" class="" style="color: #0d6efd;">View or modify schedule</a>
+                                          <table class="s-3 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
+                                            <tbody>
+                                              <tr>
+                                                <td style="line-height: 12px; font-size: 12px; width: 100%; height: 12px; margin: 0;" align="left" width="100%" height="12">
+                                                  &#160;
+                                                </td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
+                                          <table class="ax-center" role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
+                                            <tbody>
+                                              <tr>
+                                                <td style="line-height: 24px; font-size: 16px; margin: 0;" align="left">
+                                                  <div class="">
+                                                    <img src="cid:qrcode_cid" class="h-20 w-20" style="height: 80px; line-height: 100%; outline: none; text-decoration: none; display: block; width: 80px; border-style: none; border-width: 0;" width="80" height="80">
+                                                    <table class="s-2 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
+                                                      <tbody>
+                                                        <tr>
+                                                          <td style="line-height: 8px; font-size: 8px; width: 100%; height: 8px; margin: 0;" align="left" width="100%" height="8">
+                                                            &#160;
+                                                          </td>
+                                                        </tr>
+                                                      </tbody>
+                                                    </table>
+                                                  </div>
+                                                </td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
+                                          <table class="ax-center" role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
+                                            <tbody>
+                                              <tr>
+                                                <td style="line-height: 24px; font-size: 16px; margin: 0;" align="left">
+                                                  <h2 class="h4" style="padding-top: 0; padding-bottom: 0; font-weight: 500; vertical-align: baseline; font-size: 24px; line-height: 28.8px; margin: 0;" align="left">
+                                                    Welcome <?= $name ?? '' ?>
+                                                  </h2>
+                                                </td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
                                           <table class="s-5 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
                                             <tbody>
                                               <tr>
@@ -227,7 +277,8 @@
                                                 <tbody>
                                                   <tr>
                                                     <td class="fw-600 col-lg-5" style="line-height: 24px; font-size: 16px; min-height: 1px; font-weight: 600 !important; padding-right: 24px; width: 41.666667%; margin: 0;" align="left" valign="top">
-                                                      <?= $timeslot['start'] ?>-<?= $timeslot['end'] ?> </td>
+                                                      <?= $timeslot['start'] ?>-<?= $timeslot['end'] ?>
+                                                    </td>
                                                     <td class="col-lg-7" style="line-height: 24px; font-size: 16px; min-height: 1px; font-weight: normal; padding-right: 24px; width: 58.333333%; margin: 0;" align="left" valign="top">
                                                       <?= $timeslot['topic'] ?>
                                                     </td>
