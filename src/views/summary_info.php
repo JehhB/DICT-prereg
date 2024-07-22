@@ -1,5 +1,5 @@
 <?php
-$reg = Registration::find($_GET['s']);
+$reg = Registration::find($_SESSION['auth_summary']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -13,14 +13,16 @@ $reg = Registration::find($_GET['s']);
 
 <body>
   <div class="col col-md-11 col-lg-9 col-xl-8 col-xxl-7 mx-auto my-4">
-
-    <h1>
-      Registration Summary
-    </h1>
+    <div class="row">
+      <h1>
+        Registration Summary
+      </h1>
+    </div>
 
     <div class="card mb-4 shadow-sm">
-      <div class="card-header bg-secondary">
+      <div class="card-header bg-secondary d-flex">
         Personal Info
+        <a href="./summary.php?logout=logout" class="ms-auto col-auto btn btn-primary btn-sm">Logout</a>
       </div>
       <div class="card-body">
         <dl class="row mb-0">

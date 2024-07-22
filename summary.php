@@ -2,7 +2,10 @@
 require_once __DIR__ . '/src/setup.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-  if (!isset($_SESSION['auth_summary']) || !isset($_GET['s']) || $_SESSION['auth_summary'] != $_GET['s']) {
+  if (isset($_GET['logout'])) {
+    unset($_SESSION['auth_summary']);
+    redirect_response('./summary.php');
+  } else if (!isset($_SESSION['auth_summary'])) {
     include_once __DIR__ . '/src/views/summary_auth.php';
   } else if (isset($_GET['edit'])) {
     include_once __DIR__ . '/src/views/summary_edit.php';
@@ -57,19 +60,24 @@ if (isset($_POST['login'])) {
   }
 
   $_SESSION['auth_summary'] = $reg->slug;
-  redirect_response("./summary.php?s=" . $reg->slug);
+  redirect_response("./summary.php?");
 }
 
 if (isset($_POST['cancel'])) {
-  redirect_response('./summary.php?s=' . $_GET['s']);
+  redirect_response('./summary.php');
 }
 
 if (isset($_POST['save'])) {
+  if (!isset($_SESSION['auth_summary'])) {
+    flash_set('errors', 'form', 'Incorrect information provided');
+    redirect_response('./summary.php');
+  }
+
   execute("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE");
   $db = getDB();
 
   try {
-    $reg = Registration::find($_GET['s']);
+    $reg = Registration::find($_SESSION['auth_summary']);
     $current = $reg->get_registered_booths();
 
     $db->beginTransaction();
@@ -104,18 +112,18 @@ if (isset($_POST['save'])) {
 
     if ($has_errors) {
       $db->rollBack();
-      redirect_response('./summary.php?s=' . $reg->slug . '&edit');
+      redirect_response('./summary.php');
     }
 
     $db->commit();
-    redirect_response('./summary.php?s=' . $reg->slug);
+    redirect_response('./summary.php');
   } catch (Exception $e) {
     $db->rollBack();
     $_SESSION['fatal_error'] = ['code' => 500, 'message' => $e->getMessage()];
     redirect_response('./error.php');
   }
 
-  redirect_response('./summary.php?s=' . $_GET['s']);
+  redirect_response('./summary.php');
 }
 
 error_response();

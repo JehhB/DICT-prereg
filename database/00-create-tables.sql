@@ -2,7 +2,7 @@ CREATE TABLE `BoothRegistration`(
     `booth_registration_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `registration_id` INT UNSIGNED NOT NULL,
     `timeslot_id` INT UNSIGNED NOT NULL,
-    `booth_id` INT UNSIGNED NOT NULL
+    `booth_id` INT UNSIGNED NOT NULL 
 );
 ALTER TABLE
     `BoothRegistration` ADD UNIQUE `boothregistration_registration_id_timeslot_id_booth_id_unique`(
@@ -38,8 +38,13 @@ CREATE TABLE `Booths`(
     `booth_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `topic` VARCHAR(255) NOT NULL,
     `presentor` VARCHAR(255) NOT NULL,
-    `event_id` INT UNSIGNED NOT NULL
+    `event_id` INT UNSIGNED NOT NULL,
+    `email` VARCHAR(255) NOT NULL,
+    `password` VARCHAR(255) NOT NULL
 );
+
+ALTER TABLE
+    `Booths` ADD UNIQUE `booth_email_unique`(`email`);
 CREATE TABLE `Event`(
     `event_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `event_name` VARCHAR(255) NOT NULL,

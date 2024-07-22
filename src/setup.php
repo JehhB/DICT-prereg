@@ -11,6 +11,7 @@ require_once __DIR__ . '/lib/email.php';
 require_once __DIR__ . '/entity/Registration.php';
 require_once __DIR__ . '/entity/BoothRegistration.php';
 require_once __DIR__ . '/entity/Event.php';
+require_once __DIR__ . '/entity/Booth.php';
 
 session_start();
 
