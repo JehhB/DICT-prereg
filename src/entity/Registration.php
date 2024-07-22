@@ -132,6 +132,31 @@ class Registration
     return $reg;
   }
 
+
+  public static function find_by_email(string $email): ?Registration
+  {
+    $r = execute("SELECT * FROM Registrations WHERE email = ?", [$email])->fetch();
+    if (!$r) return null;
+
+    $reg = new Registration();
+    $reg->registration_date = new DateTime($r['registration_date']);
+    $reg->id = $r['registration_id'];
+    $reg->email = $r['email'];
+    $reg->name = $r['name'];
+    $reg->position = $r['position'];
+    $reg->sex = $r['sex'];
+    $reg->birthday = $r['birthday'];
+    $reg->contact_number = $r['contact_number'];
+    $reg->affiliation = $r['affiliation'];
+    $reg->type = $r['type'];
+    $reg->event_id = $r['event_id'];
+    $reg->is_indigenous = $r['is_indigenous'];
+    $reg->slug = $r['slug'];
+    $reg->email_sent = $r['email_sent'];
+
+    return $reg;
+  }
+
   public function get_age(): int
   {
     $birthDate = new DateTime($this->birthday);
