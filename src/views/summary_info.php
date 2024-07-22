@@ -60,7 +60,7 @@ $reg = Registration::find($_SESSION['auth_summary']);
         <span>
           Booth schedule
         </span>
-        <a href="<?= $_SERVER['REQUEST_URI'] ?>&edit" class="btn btn-sm btn-primary ms-auto">
+        <a href="./summary.php?edit" class="btn btn-sm btn-primary ms-auto">
           Edit
         </a>
       </div>
