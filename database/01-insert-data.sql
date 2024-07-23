@@ -21,23 +21,29 @@ INSERT INTO Timeslots (timestart, timeend, event_id) VALUES
   ('2024-08-05 16:30:00', '2024-08-05 17:00:00', 1);
 
 INSERT INTO Booths (topic, presentor, event_id) VALUES
-  ('Cybersecurity Trends', 'Cagayan Tech Solutions', 1),
-  ('Cloud Computing Services', 'Northern Luzon IT Corp', 1),
-  ('AI in Agriculture', 'Cagayan Valley Innovations', 1),
-  ('IoT for Smart Cities', 'TechnoTuguegarao', 1),
-  ('Big Data Analytics', 'DataSmart Cagayan', 1),
-  ('5G Technology', 'ConnectCagayan', 1),
-  ('Blockchain Applications', 'CryptoValley Solutions', 1),
-  ('Mobile App Development', 'AppGenius Tuguegarao', 1),
-  ('E-commerce Platforms', 'Digital Marketplace Cagayan', 1),
-  ('Virtual Reality in Education', 'EduTech Cagayan', 1),
-  ('Machine Learning for Business', 'Isabela AI Innovations', 2),
-  ('Digital Marketing Strategies', 'WebSavvy Cauayan', 2),
-  ('Robotic Process Automation', 'AutomateIsabela', 2),
-  ('Augmented Reality in Retail', 'FutureShop Technologies', 2),
-  ('Cybersecurity for SMEs', 'SecureNet Isabela', 2),
-  ('Green IT Solutions', 'EcoTech Cauayan', 2),
-  ('Data Privacy and Protection', 'PrivacyGuard Solutions', 2),
-  ('Smart Agriculture Tech', 'AgriTech Isabela', 2),
-  ('Web Development Frameworks', 'CodeMasters Cauayan', 2),
-  ('IT Infrastructure Management', 'NetPro Isabela', 2);
+  ('Teleperformance', 'Teleperformance', 1),
+  ('iRhythm', 'iRhythm', 1),
+  ('Everise', 'Everise', 1),
+  ('Cognizant', 'Cognizant', 1),
+  ('Alorica', 'Alorica', 1),
+  ('Accenture', 'Accenture', 1),
+  ('Company 7', 'Company 7', 1),
+  ('Company 8', 'Company 8', 1),
+  ('Company 9', 'Company 9', 1),
+  ('Company 10', 'Company 10', 1),
+  ('Teleperformance', 'Teleperformance', 2),
+  ('iRhythm', 'iRhythm', 2),
+  ('Everise', 'Everise', 2),
+  ('Cognizant', 'Cognizant', 2),
+  ('Alorica', 'Alorica', 2),
+  ('Accenture', 'Accenture', 2),
+  ('Company 7', 'Company 7', 2),
+  ('Company 8', 'Company 8', 2),
+  ('Company 9', 'Company 9', 2),
+  ('Company 10', 'Company 10', 2);
+
+
+INSERT INTO BoothRegistration (timeslot_id, booth_id) VALUES
+  (1, 11),
+  (1, 11),
+  (1, 11);

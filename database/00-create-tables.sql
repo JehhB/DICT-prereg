@@ -1,15 +1,17 @@
 CREATE TABLE `BoothRegistration`(
     `booth_registration_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `registration_id` INT UNSIGNED NOT NULL,
+    `registration_id` INT UNSIGNED DEFAULT NULL,
     `timeslot_id` INT UNSIGNED NOT NULL,
     `booth_id` INT UNSIGNED NOT NULL
 );
+/*
 ALTER TABLE
     `BoothRegistration` ADD UNIQUE `boothregistration_registration_id_timeslot_id_booth_id_unique`(
         `registration_id`,
         `timeslot_id`,
         `booth_id`
     );
+    */
 CREATE TABLE `Timeslots`(
     `timeslot_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `timestart` DATETIME NOT NULL,
@@ -55,5 +57,7 @@ ALTER TABLE
     `BoothRegistration` ADD CONSTRAINT `boothregistration_booth_id_foreign` FOREIGN KEY(`booth_id`) REFERENCES `Booths`(`booth_id`);
 ALTER TABLE
     `Timeslots` ADD CONSTRAINT `timeslots_event_id_foreign` FOREIGN KEY(`event_id`) REFERENCES `Event`(`event_id`);
+    /*
 ALTER TABLE
-    `BoothRegistration` ADD CONSTRAINT `boothregistration_registration_id_foreign` FOREIGN KEY(`registration_id`) REFERENCES `Registrations`(`registration_id`);
+    `BoothRegistration` ADD CONSTRAINT `boothregistration_registration_id_foreign` FOREIGN KEY(`registration_id`) REFERENCES `Registrations`(`registration_id`) ON DELETE CASCADE;
+    */
