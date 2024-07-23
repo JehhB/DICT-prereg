@@ -4,7 +4,7 @@ require __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../lib/database.php';
 require_once __DIR__ . '/../entity/Registration.php';
 
-define('BASEURL', 'http://localhost:8080');
+define('BASEURL', 'https://dtechsideprojects.online/');
 
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
