@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
 if (isset($_POST['login'])) {
   $validate_filters = [
-    'email' => FILTER_VALIDATE_EMAIL,
+    'email' => FILTER_DEFAULT,
     'password' => FILTER_DEFAULT,
   ];
 
@@ -32,7 +32,7 @@ if (isset($_POST['login'])) {
   }
 
   $error_message = [
-    'email' => 'This is not a valid email address',
+    'email' => 'This is not a username',
     'password' => 'password is required',
   ];
 

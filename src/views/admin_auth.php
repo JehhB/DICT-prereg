@@ -24,8 +24,8 @@
                     <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'form') ?></strong>
                   <?php endif ?>
 
-                  <label for="email">Email address</label>
-                  <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required @input="valid = $el.checkValidity()">
+                  <label for="email">Username</label>
+                  <input type="text" class="form-control" id="email" name="email" placeholder="Enter username" required @input="valid = $el.checkValidity()">
 
                   <?php if (flash_has('errors', 'email')): ?>
                     <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'email') ?></strong>

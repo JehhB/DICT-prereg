@@ -4,6 +4,7 @@ CREATE TABLE `BoothRegistration`(
     `timeslot_id` INT UNSIGNED NOT NULL,
     `booth_id` INT UNSIGNED NOT NULL 
 );
+
 ALTER TABLE
     `BoothRegistration` ADD UNIQUE `boothregistration_registration_id_timeslot_id_booth_id_unique`(
         `registration_id`,
@@ -40,7 +41,8 @@ CREATE TABLE `Booths`(
     `presentor` VARCHAR(255) NOT NULL,
     `event_id` INT UNSIGNED NOT NULL,
     `email` VARCHAR(255) NOT NULL,
-    `password` VARCHAR(255) NOT NULL
+    `password` VARCHAR(255) NOT NULL,
+    `logo` VARCHAR(255) NOT NULL
 );
 
 ALTER TABLE
