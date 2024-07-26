@@ -2,6 +2,7 @@
 require __DIR__ . '/vendor/autoload.php';
 
 $env = parse_ini_file(__DIR__ . '/.env');
+define('BASEURL', 'https://dtechsideprojects.online/');
 
 require_once __DIR__ . '/lib/database.php';
 require_once __DIR__ . '/lib/csrf.php';

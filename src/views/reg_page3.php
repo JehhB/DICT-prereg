@@ -14,7 +14,7 @@
       <div class="card mb-3 shadow-sm" style="max-height: 250px;">
         <video autoplay loop muted playsinline>
           <source src="./assets/banner.mp4" type="video/mp4">
-          Join DICT HIMS Career and Job Fair
+          Join DICT Career and Job Fair
         </video>
       </div>
 
@@ -89,15 +89,14 @@
               }, $timeslots);
 
               foreach ($timeslots as $t):
+                $id = $_SESSION['register_booths'][$t['id']];
+                $args = [':id' => $_SESSION['register_booths'][$t['id']]];
+                $b = execute('SELECT * FROM Booths WHERE booth_id = :id', $args)->fetch();
+                if (!$b) continue;
               ?>
                 <dt class="col-5 col-sm-4 col-md-3"><?= $t['start'] ?>-<?= $t['end'] ?></dt>
                 <dd class="col-7 col-sm-8 col-md-9">
-                  <?php
-                  $id = $_SESSION['register_booths'][$t['id']];
-                  $args = [':id' => $_SESSION['register_booths'][$t['id']]];
-                  $stmt = execute('SELECT topic FROM Booths WHERE booth_id = :id', $args);
-                  echo $stmt->fetchColumn();
-                  ?>
+                  <img src="<?= $b['logo'] ?>" alt="<?= htmlspecialchars($b['topic']) ?>" height="20px" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="<?= htmlspecialchars($b['topic']) ?>">
                 </dd>
               <?php endforeach ?>
             </dl>

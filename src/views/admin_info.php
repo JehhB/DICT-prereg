@@ -91,7 +91,13 @@ $num_page = ceil($count / 10.0);
                   <td><?= htmlspecialchars($reg->registration_date->format('Y/m/d H:i')) ?></td>
                   <td><?= $start ?>-<?= $end ?></td>
                   <td><?= htmlspecialchars($reg->name) ?></td>
-                  <td><?= htmlspecialchars($reg->sex) ?></td>
+                  <td>
+                    <?= match ($reg->sex) {
+                      'M' => 'Male',
+                      'F' => 'Female',
+                      'OTHER' => 'Others',
+                      'BLANK' => 'Prefer not to mention',
+                    } ?>
                   <td><?= htmlspecialchars($reg->birthday) ?></td>
                   <td><?= htmlspecialchars($reg->get_age()) ?></td>
                   <td><?= htmlspecialchars($reg->affiliation) ?></td>

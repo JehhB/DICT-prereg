@@ -6,8 +6,6 @@ require_once __DIR__ . '/../entity/Registration.php';
 
 define('BASEURL', 'https://dtechsideprojects.online/');
 
-use chillerlan\QRCode\QRCode;
-use chillerlan\QRCode\QROptions;
 use PHPMailer\PHPMailer\PHPMailer;
 
 $env = parse_ini_file(__DIR__ . '/../.env');
@@ -55,6 +53,7 @@ if (php_sapi_name() === 'cli') {
       'start' => $start->format('g:i A'),
       'end' => $end->format('g:i A'),
       'topic' => $booth['topic'],
+      'logo' => $booth['logo'],
     ];
 
     if (is_null($first_start)) {
@@ -67,10 +66,11 @@ if (php_sapi_name() === 'cli') {
   if (!is_null($first_start) and !is_null($last_end)) {
     $event_start = $first_start->format('Ymd\THis');
     $event_end = $last_end->format('Ymd\THis');
-    $add_to_calendar = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=DICT+HIMAP+Carreer+Roadshow+and+Job+Fair&dates={$event_start}/{$event_end}";
+    $add_to_calendar = "https://calendar.google.com/calendar/render?action=template&text=DICT+Career+Roadshow+and+Job+Fair&dates={$event_start}/{$event_end}";
   }
   $name = $reg->name;
-  $summary_link =  BASEURL . '/summary.php?s=' . $reg->slug;
+  $slug = $reg->slug;
+  $summary_link =  BASEURL . 'summary.php?s=' . $reg->slug;
 
   ob_start();
   include __DIR__ . '/../views/email.php';
@@ -80,25 +80,17 @@ if (php_sapi_name() === 'cli') {
   include __DIR__ . '/../views/email.raw.php';
   $raw = ob_get_clean();
 
-  $qrOptions = new QROptions([
-    'outputType' => QRCode::OUTPUT_IMAGE_PNG,
-    'eccLevel' => QRCode::ECC_L,
-    'scale' => 5,
-    'imageBase64' => true,
-  ]);
-
-  $qrCode = (new QRCode($qrOptions))->render($summary_link);
 
   try {
     $mail = get_email();
     $mail->addAddress($reg->email, $reg->name);
 
     $mail->isHTML(true);
-    $mail->Subject = 'DICT HIMAP Career Roadshow and Job Fair Registration';
+    $mail->Subject = 'DICT Career Roadshow and Job Fair Registration';
     $mail->Body    = $email;
     $mail->AltBody = $raw;
 
-    $mail->addStringEmbeddedImage(base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $qrCode)), "qrcode_cid", "qr_code.png", "base64", "image/png");
+    $mail->addStringEmbeddedImage(base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $reg->qr_code)), "qrcode_cid", "qr_code.png", "base64", "image/png");
     $mail->send();
 
     $reg->mark_email_sent();

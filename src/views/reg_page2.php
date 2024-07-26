@@ -43,7 +43,7 @@
       <div class="card mb-3 shadow-sm" style="max-height: 250px;">
         <video autoplay loop muted playsinline>
           <source src="./assets/banner.mp4" type="video/mp4">
-          Join DICT HIMS Career and Job Fair
+          Join DICT Career and Job Fair
         </video>
       </div>
 
@@ -66,7 +66,7 @@
           ]);
         }, $timeslots);
 
-        $booths = execute('SELECT booth_id as id, topic from Booths WHERE event_id = ?', [
+        $booths = execute('SELECT booth_id as id, topic, logo from Booths WHERE event_id = ?', [
           $_SESSION['register_event_id']
         ])->fetchAll();
         $count = BoothRegistration::count_summary();
@@ -94,7 +94,7 @@
             <div class="card-body">
               <?php foreach ($booths as $j => $b):
               ?>
-                <div class="form-check d-flex">
+                <div class="form-check d-flex mb-2 align-items-center">
                   <input
                     data-radio-booth="<?= $b['id'] ?>"
                     x-bind="input"
@@ -105,7 +105,7 @@
                     value="<?= $b['id'] ?>"
                     required>
                   <label class="ms-2 form-check-label d-block" for="r_<?= $t['id'] ?>_<?= $b['id'] ?>">
-                    <?= $b['topic'] ?>
+                    <img src="<?= $b['logo'] ?>" alt="<?= htmlspecialchars($b['topic']) ?>" height="20px" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="<?= htmlspecialchars($b['topic']) ?>">
                   </label>
                   <small class="ms-auto" x-text="format('<?= $t['id'] ?>', '<?= $b['id'] ?>')">
                   </small>

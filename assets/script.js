@@ -10,9 +10,9 @@ function form(init_data_id, exclude = null) {
           .then(data => {
             this.slots = data;
           }).then(() => new Promise((resolve) => {
-            setTimeout(resolve, 1000);
+            setTimeout(resolve, 2500);
           })).catch((e) => new Promise((resolve) => {
-            setTimeout(resolve, 2000);
+            setTimeout(resolve, 10000);
           }));
       }
     },
@@ -110,3 +110,9 @@ document.addEventListener('alpine:init', () => {
   Alpine.data('description', description);
 })
 
+document.addEventListener('DOMContentLoaded', () => {
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  [...tooltipTriggerList].forEach(tooltipTriggerEl => {
+    new bootstrap.Tooltip(tooltipTriggerEl);
+  });
+});

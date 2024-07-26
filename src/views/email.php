@@ -93,9 +93,32 @@
         width: 80px !important
       }
 
+      .h-6,
+      .h-6>tbody>tr>td {
+        height: 24px !important
+      }
+
       .h-20,
       .h-20>tbody>tr>td {
         height: 80px !important
+      }
+
+      .pl-lg-0:not(table),
+      .pl-lg-0:not(.btn)>tbody>tr>td,
+      .pl-lg-0.btn td a,
+      .px-lg-0:not(table),
+      .px-lg-0:not(.btn)>tbody>tr>td,
+      .px-lg-0.btn td a {
+        padding-left: 0 !important
+      }
+
+      .pl-4:not(table),
+      .pl-4:not(.btn)>tbody>tr>td,
+      .pl-4.btn td a,
+      .px-4:not(table),
+      .px-4:not(.btn)>tbody>tr>td,
+      .px-4.btn td a {
+        padding-left: 16px !important
       }
 
       *[class*=s-lg-]>tbody>tr>td {
@@ -192,7 +215,15 @@
                                               <tr>
                                                 <td style="line-height: 24px; font-size: 16px; margin: 0;" align="left">
                                                   <div class="">
-                                                    <img src="cid:qrcode_cid" class="h-20 w-20" style="height: 80px; line-height: 100%; outline: none; text-decoration: none; display: block; width: 80px; border-style: none; border-width: 0;" width="80" height="80">
+                                                    <table class="h-20 w-20  bg-white w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 80px; height: 80px;" bgcolor="#ffffff" width="80" height="80">
+                                                      <tbody>
+                                                        <tr>
+                                                          <td style="line-height: 24px; font-size: 16px; width: 80px; height: 80px; margin: 0;" align="left" bgcolor="#ffffff" width="80" height="80">
+                                                            <img src="cid:qrcode_cid" class="img-fluid" style="height: auto; line-height: 100%; outline: none; text-decoration: none; display: block; max-width: 100%; width: 100%; border-style: none; border-width: 0;" width="100%">
+                                                          </td>
+                                                        </tr>
+                                                      </tbody>
+                                                    </table>
                                                     <table class="s-2 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
                                                       <tbody>
                                                         <tr>
@@ -212,8 +243,17 @@
                                               <tr>
                                                 <td style="line-height: 24px; font-size: 16px; margin: 0;" align="left">
                                                   <h2 class="h4" style="padding-top: 0; padding-bottom: 0; font-weight: 500; vertical-align: baseline; font-size: 24px; line-height: 28.8px; margin: 0;" align="left">
-                                                    Welcome <?= $name ?? '' ?>
+                                                    Welcome, <?= $name ?? '' ?>!
                                                   </h2>
+                                                </td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
+                                          <table class="ax-center" role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
+                                            <tbody>
+                                              <tr>
+                                                <td style="line-height: 24px; font-size: 16px; margin: 0;" align="left">
+                                                  <small class="text-secondary" style="color: #718096;"><?= $slug ?></small>
                                                 </td>
                                               </tr>
                                             </tbody>
@@ -276,11 +316,20 @@
                                               <table class="" role="presentation" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed; width: 100%;" width="100%">
                                                 <tbody>
                                                   <tr>
-                                                    <td class="fw-600 col-lg-5" style="line-height: 24px; font-size: 16px; min-height: 1px; font-weight: 600 !important; padding-right: 24px; width: 41.666667%; margin: 0;" align="left" valign="top">
+                                                    <td class="fw-600 col-lg-5 ay-center" style="line-height: 24px; font-size: 16px; min-height: 1px; font-weight: 600 !important; padding-right: 24px; width: 41.666667%; margin: 0;" align="left" valign="top">
                                                       <?= $timeslot['start'] ?>-<?= $timeslot['end'] ?>
                                                     </td>
                                                     <td class="col-lg-7" style="line-height: 24px; font-size: 16px; min-height: 1px; font-weight: normal; padding-right: 24px; width: 58.333333%; margin: 0;" align="left" valign="top">
-                                                      <?= $timeslot['topic'] ?>
+                                                      <table class="pl-4 pl-lg-0" role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                                        <tbody>
+                                                          <tr>
+                                                            <td style="line-height: 24px; font-size: 16px; padding-left: 0; margin: 0;" align="left">
+                                                              <img class="h-6" src="<?= BASEURL ?><?= $timeslot['logo'] ?>" alt="<?= $timeslot['topic'] ?>" style="height: 24px; line-height: 100%; outline: none; text-decoration: none; display: block; border-style: none; border-width: 0;" height="24">
+
+                                                            </td>
+                                                          </tr>
+                                                        </tbody>
+                                                      </table>
                                                     </td>
                                                   </tr>
                                                 </tbody>

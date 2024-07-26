@@ -22,7 +22,7 @@ CREATE TABLE `Registrations`(
     `event_id` INT UNSIGNED NOT NULL,
     `registration_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `name` VARCHAR(255) NOT NULL,
-    `sex` ENUM('M', 'F') NOT NULL,
+    `sex` ENUM('M', 'F', 'OTHER', 'BLANK') NOT NULL,
     `birthday` DATE NOT NULL,
     `email` VARCHAR(255) NOT NULL,
     `contact_number` BIGINT NOT NULL,
@@ -31,7 +31,8 @@ CREATE TABLE `Registrations`(
     `type` VARCHAR(255) NOT NULL,
     `is_indigenous` BOOLEAN NOT NULL,
     `slug` VARCHAR(64) NOT NULL,
-    `email_sent` BOOLEAN NOT NULL DEFAULT FALSE
+    `email_sent` BOOLEAN NOT NULL DEFAULT FALSE,
+    `qr_code` LONGTEXT NOT NULL
 );
 ALTER TABLE
     `Registrations` ADD UNIQUE `registrations_email_unique`(`email`);

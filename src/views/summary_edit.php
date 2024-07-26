@@ -11,7 +11,7 @@ $registered_booths = array_map(function ($v) {
   ]);
 }, $registered_booths);
 
-$booths = execute('SELECT booth_id as id, topic from Booths WHERE event_id = ?', [
+$booths = execute('SELECT booth_id as id, topic, logo from Booths WHERE event_id = ?', [
   $reg->event_id
 ])->fetchAll();
 $count = BoothRegistration::count_summary();
@@ -83,7 +83,7 @@ $count = BoothRegistration::count_summary();
                 $grace_time = (new DateTime($t['timestart']))->modify('+5 minutes');
                 $current = new DateTime();
               ?>
-                <div class="form-check d-flex">
+                <div class="form-check d-flex mb-2 align-items-center">
                   <input
                     data-radio-booth="<?= $b['id'] ?>"
                     <?php if ($current > $grace_time): ?>
@@ -99,7 +99,7 @@ $count = BoothRegistration::count_summary();
                     id="r_<?= $t['timeslot_id'] ?>_<?= $b['id'] ?>"
                     value="<?= $b['id'] ?>">
                   <label class="ms-2 form-check-label d-block" for="r_<?= $t['timeslot_id'] ?>_<?= $b['id'] ?>">
-                    <?= $b['topic'] ?>
+                    <img src="<?= $b['logo'] ?>" alt="<?= htmlspecialchars($b['topic']) ?>" height="20px" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="<?= htmlspecialchars($b['topic']) ?>">
                   </label>
                   <small class="ms-auto" x-text="format('<?= $t['timeslot_id'] ?>', '<?= $b['id'] ?>')">
                   </small>

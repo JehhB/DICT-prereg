@@ -2,6 +2,10 @@
   display: none !important;
 }
 
+.card {
+  scroll-margin: 2rem;
+}
+
 :root {
   --bs-secondary-rgb: 144, 155, 212;
 }
