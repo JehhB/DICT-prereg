@@ -2,7 +2,7 @@ CREATE TABLE `BoothRegistration`(
     `booth_registration_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `registration_id` INT UNSIGNED DEFAULT NULL,
     `timeslot_id` INT UNSIGNED NOT NULL,
-    `booth_id` INT UNSIGNED NOT NULL
+    `booth_id` INT UNSIGNED NOT NULL 
 );
 /*
 ALTER TABLE
@@ -23,7 +23,7 @@ CREATE TABLE `Registrations`(
     `event_id` INT UNSIGNED NOT NULL,
     `registration_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `name` VARCHAR(255) NOT NULL,
-    `sex` ENUM('M', 'F') NOT NULL,
+    `sex` ENUM('M', 'F', 'OTHER', 'BLANK') NOT NULL,
     `birthday` DATE NOT NULL,
     `email` VARCHAR(255) NOT NULL,
     `contact_number` BIGINT NOT NULL,
@@ -31,7 +31,9 @@ CREATE TABLE `Registrations`(
     `position` VARCHAR(255) NOT NULL,
     `type` VARCHAR(255) NOT NULL,
     `is_indigenous` BOOLEAN NOT NULL,
-    `slug` VARCHAR(64) NOT NULL
+    `slug` VARCHAR(64) NOT NULL,
+    `email_sent` BOOLEAN NOT NULL DEFAULT FALSE,
+    `qr_code` LONGTEXT NOT NULL
 );
 ALTER TABLE
     `Registrations` ADD UNIQUE `registrations_email_unique`(`email`);
@@ -39,14 +41,21 @@ CREATE TABLE `Booths`(
     `booth_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `topic` VARCHAR(255) NOT NULL,
     `presentor` VARCHAR(255) NOT NULL,
-    `event_id` INT UNSIGNED NOT NULL
+    `event_id` INT UNSIGNED NOT NULL,
+    `email` VARCHAR(255) NOT NULL,
+    `password` VARCHAR(255) NOT NULL,
+    `logo` VARCHAR(255) NOT NULL
 );
+
+ALTER TABLE
+    `Booths` ADD UNIQUE `booth_email_unique`(`email`);
 CREATE TABLE `Event`(
     `event_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `event_name` VARCHAR(255) NOT NULL,
     `event_venue` VARCHAR(255) NOT NULL,
     `prefix` VARCHAR(16) NOT NULL DEFAULT ''
 );
+
 ALTER TABLE
     `Booths` ADD CONSTRAINT `booths_event_id_foreign` FOREIGN KEY(`event_id`) REFERENCES `Event`(`event_id`);
 ALTER TABLE

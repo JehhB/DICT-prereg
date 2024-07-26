@@ -1,12 +1,18 @@
 <?php
+require __DIR__ . '/vendor/autoload.php';
+
+$env = parse_ini_file(__DIR__ . '/.env');
+define('BASEURL', 'https://dtechsideprojects.online/');
 
 require_once __DIR__ . '/lib/database.php';
 require_once __DIR__ . '/lib/csrf.php';
 require_once __DIR__ . '/lib/flash.php';
+require_once __DIR__ . '/lib/email.php';
 
 require_once __DIR__ . '/entity/Registration.php';
 require_once __DIR__ . '/entity/BoothRegistration.php';
 require_once __DIR__ . '/entity/Event.php';
+require_once __DIR__ . '/entity/Booth.php';
 
 session_start();
 

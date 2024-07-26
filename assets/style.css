@@ -2,6 +2,10 @@
   display: none !important;
 }
 
+.card {
+  scroll-margin: 2rem;
+}
+
 :root {
   --bs-secondary-rgb: 144, 155, 212;
 }
@@ -40,4 +44,15 @@
   --bs-btn-hover-border-color: #314296;
   --bs-btn-active-bg: #314296;
   --bs-btn-active-border-color: #314296;
+}
+
+.dropdown-item {
+  --bs-dropdown-link-hover-bg: #314296;
+  --bs-dropdown-link-active-bg: #314296;
+}
+
+.no-wrap td,
+.no-wrap th {
+  white-space: nowrap;
+  word-break: keep-all;
 }

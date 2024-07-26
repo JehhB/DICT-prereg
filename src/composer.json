@@ -5,5 +5,9 @@
         "psr-4": {
         }
     },
-    "require": {}
+    "require": {
+        "phpmailer/phpmailer": "^6.9",
+        "endroid/qr-code": "^5.0",
+        "chillerlan/php-qrcode": "^5.0"
+    }
 }

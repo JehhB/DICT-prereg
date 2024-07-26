@@ -1,6 +1,9 @@
 <?php
 
-define('MAX_SLOTS', 3);
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
+
+define('MAX_SLOTS', 35);
 
 class Registration
 {
@@ -17,6 +20,8 @@ class Registration
   public int $event_id;
   public bool $is_indigenous;
   public string $slug;
+  public bool $email_sent;
+  public string $qr_code;
 
   static function email_exist(string $email): bool
   {
@@ -42,11 +47,21 @@ class Registration
     $slug = substr($slug, -17);
     $slug = $event->prefix . '-' . str_replace('.', '-', $slug);
 
+    $summary_link =  BASEURL . 'summary.php?s=' . $slug;
+    $qrOptions = new QROptions([
+      'outputType' => QRCode::OUTPUT_IMAGE_PNG,
+      'eccLevel' => QRCode::ECC_M,
+      'scale' => 5,
+      'imageBase64' => true,
+    ]);
+
+    $qrCode = (new QRCode($qrOptions))->render($summary_link);
+
     execute(
       "INSERT INTO Registrations (
-                    name, email, position, sex, birthday, contact_number, affiliation, type, event_id, is_indigenous, slug
+                    name, email, position, sex, birthday, contact_number, affiliation, type, event_id, is_indigenous, slug, qr_code
                 ) VALUES (
-                    :name, :email, :position, :sex, :birthday, :contact_number, :affiliation, :type, :event_id, :is_indigenous, :slug
+                    :name, :email, :position, :sex, :birthday, :contact_number, :affiliation, :type, :event_id, :is_indigenous, :slug, :qr_code
                 )",
       [
         ':name' => $name,
@@ -60,6 +75,7 @@ class Registration
         ':event_id' => $event_id,
         ':is_indigenous' => [$is_indigenous, PDO::PARAM_BOOL],
         ':slug' => $slug,
+        ':qr_code' => $qrCode,
       ]
     );
 
@@ -77,6 +93,8 @@ class Registration
     $reg->event_id = $event_id;
     $reg->is_indigenous = $is_indigenous;
     $reg->slug = $slug;
+    $reg->email_sent = false;
+    $reg->qr_code = $qrCode;
 
     return $reg;
   }
@@ -100,6 +118,8 @@ class Registration
       $reg->event_id = $r['event_id'];
       $reg->is_indigenous = $r['is_indigenous'];
       $reg->slug = $r['slug'];
+      $reg->email_sent = $r['email_sent'];
+      $reg->qr_code = $r['qr_code'];
       $res[] = $reg;
     }
     return $res;
@@ -124,6 +144,34 @@ class Registration
     $reg->event_id = $r['event_id'];
     $reg->is_indigenous = $r['is_indigenous'];
     $reg->slug = $r['slug'];
+    $reg->email_sent = $r['email_sent'];
+    $reg->qr_code = $r['qr_code'];
+
+    return $reg;
+  }
+
+
+  public static function find_by_email(string $email): ?Registration
+  {
+    $r = execute("SELECT * FROM Registrations WHERE email = ?", [$email])->fetch();
+    if (!$r) return null;
+
+    $reg = new Registration();
+    $reg->registration_date = new DateTime($r['registration_date']);
+    $reg->id = $r['registration_id'];
+    $reg->email = $r['email'];
+    $reg->name = $r['name'];
+    $reg->position = $r['position'];
+    $reg->sex = $r['sex'];
+    $reg->birthday = $r['birthday'];
+    $reg->contact_number = $r['contact_number'];
+    $reg->affiliation = $r['affiliation'];
+    $reg->type = $r['type'];
+    $reg->event_id = $r['event_id'];
+    $reg->is_indigenous = $r['is_indigenous'];
+    $reg->slug = $r['slug'];
+    $reg->email_sent = $r['email_sent'];
+    $reg->qr_code = $r['qr_code'];
 
     return $reg;
   }
@@ -160,12 +208,18 @@ class Registration
 
   public function get_registered_booths(): array
   {
-    $sql = 'SELECT br.booth_registration_id, t.timeslot_id, t.timestart, t.timeend, b.booth_id, b.topic, b.presentor
+    $sql = 'SELECT br.booth_registration_id, t.timeslot_id, t.timestart, t.timeend, b.booth_id, b.topic, b.presentor, b.logo
           FROM BoothRegistration br
           JOIN Timeslots t ON br.timeslot_id = t.timeslot_id
           JOIN Booths b ON br.booth_id = b.booth_id
           WHERE br.registration_id = ?
           ORDER BY t.timestart ASC';
     return execute($sql, [$this->id])->fetchAll();
+  }
+
+  public function mark_email_sent()
+  {
+    $sql = 'UPDATE Registrations SET email_sent = TRUE WHERE registration_id = ?';
+    execute($sql, [$this->id]);
   }
 }

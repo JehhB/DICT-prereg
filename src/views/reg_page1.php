@@ -95,10 +95,20 @@ foreach (array_keys($_SESSION) as $k) {
           </div>
           <div class="modal-body">
             <p>
-              The DICT recognizes their responsibilities under the <strong>Republic Act No. 10173 (Act)</strong>, also known as the <strong>Data Privacy Act of 2012</strong>. The personal data obtained from this form is analyzed, entered, and stored within the Department’s authorized information and communications system and will only be accessed by the <strong>DICT</strong> authorized personnel. The <strong>DICT</strong> Team has instituted appropriate organizational, technical, and physical security measures to ensure the protection of the participants’ personal data.
+              The DICT recognizes their responsibilities under the <strong>Republic Act No. 10173 (Act)</strong>, also
+              known as the <strong>Data Privacy Act of 2012</strong>. The personal data obtained from this form is
+              analyzed, entered, and stored within the Department’s authorized information and communications system and
+              will only be accessed by the <strong>DICT</strong> authorized personnel. The <strong>DICT</strong>
+              Team has instituted appropriate organizational, technical, and physical security
+              measures to ensure the protection of the participants’ personal data.
             </p>
             <p>
-              By pressing <strong>"I Agree,"</strong> I am providing consent to the <strong>DICT</strong> to gather and process my information for my participation in this training. <strong>My details will not be disclosed to any third-party organizations or affiliates of DICT and its partners</strong>. The information will be exclusively utilized for reporting quantitative data of attendees and sending invitations for participation in the specified activity. </p>
+              By pressing <strong>"I Agree,"</strong> I am providing consent to the <strong>DICT</strong> to gather and
+              process my information for my participation in this training. <strong>My details will not be disclosed
+                to any third-party organizations or affiliates of DICT and its partners</strong>. The information will be
+              exclusively utilized for reporting quantitative data of attendees and sending invitations for participation
+              in the specified activity.
+            </p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="fetch('./?accept_data_privacy=true')">I Agree</button>
@@ -130,7 +140,7 @@ foreach (array_keys($_SESSION) as $k) {
       <div class="card mb-3 shadow-sm" style="max-height: 250px;">
         <video autoplay loop muted playsinline>
           <source src="./assets/banner.mp4" type="video/mp4">
-          Join DICT HIMS Career and Job Fair
+          Join DICT Career and Job Fair
         </video>
       </div>
 
@@ -199,6 +209,8 @@ foreach (array_keys($_SESSION) as $k) {
                 <option>-- Please choose your sex --</option>
                 <option value="M" <?= isset($_SESSION['register_sex']) && $_SESSION['register_sex'] === 'M' ? 'selected' : '' ?>>Male</option>
                 <option value="F" <?= isset($_SESSION['register_sex']) && $_SESSION['register_sex'] === 'F' ? 'selected' : '' ?>>Female</option>
+                <option value="OTHER" <?= isset($_SESSION['register_sex']) && $_SESSION['register_sex'] === 'OTHER' ? 'selected' : '' ?>>Others</option>
+                <option value="BLANK" <?= isset($_SESSION['register_sex']) && $_SESSION['register_sex'] === 'BLANK' ? 'selected' : '' ?>>Prefer not to mention</option>
               </select>
               <?php if (flash_has('errors', 'sex')): ?>
                 <strong x-transition x-show.important="!valid" class="alert alert-danger d-block py-1 px-3 mt-2"><?= flash_get('errors', 'sex') ?></strong>

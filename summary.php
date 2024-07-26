@@ -1,12 +1,11 @@
 <?php
 require_once __DIR__ . '/src/setup.php';
 
-if (!isset($_GET['s'])) {
-  error_get_last(404, 'You are lost, do you want to register');
-}
-
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-  if (!isset($_SESSION['auth_summary']) || $_SESSION['auth_summary'] != $_GET['s']) {
+  if (isset($_GET['logout'])) {
+    unset($_SESSION['auth_summary']);
+    redirect_response('./summary.php');
+  } else if (!isset($_SESSION['auth_summary'])) {
     include_once __DIR__ . '/src/views/summary_auth.php';
   } else if (isset($_GET['edit'])) {
     include_once __DIR__ . '/src/views/summary_edit.php';
@@ -20,8 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
 
 if (isset($_POST['login'])) {
-  $reg = Registration::find($_GET['s']);
-
   $sanitize_filters = [
     'email' => FILTER_SANITIZE_EMAIL,
     'birthday' => FILTER_DEFAULT,
@@ -37,7 +34,9 @@ if (isset($_POST['login'])) {
   $input = array_intersect_key($input, $validate_filters);
 
   $has_error = false;
-  if ($reg->email != $input['email'] || $reg->birthday != $input['birthday']) {
+  $reg = Registration::find_by_email($input['email']);
+
+  if (is_null($reg) || $reg->birthday !== $input['birthday']) {
     flash_set('errors', 'form', 'Incorrect information provided');
     $has_error = true;
   }
@@ -62,20 +61,25 @@ if (isset($_POST['login'])) {
     redirect_response($_SERVER['REQUEST_URI']);
   }
 
-  $_SESSION['auth_summary'] = $_GET['s'];
-  redirect_response($_SERVER['REQUEST_URI']);
+  $_SESSION['auth_summary'] = $reg->slug;
+  redirect_response("./summary.php?");
 }
 
 if (isset($_POST['cancel'])) {
-  redirect_response('./summary.php?s=' . $_GET['s']);
+  redirect_response('./summary.php');
 }
 
 if (isset($_POST['save'])) {
+  if (!isset($_SESSION['auth_summary'])) {
+    flash_set('errors', 'form', 'Incorrect information provided');
+    redirect_response('./summary.php');
+  }
+
   execute("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE");
   $db = getDB();
 
   try {
-    $reg = Registration::find($_GET['s']);
+    $reg = Registration::find($_SESSION['auth_summary']);
     $current = $reg->get_registered_booths();
 
     $db->beginTransaction();
@@ -110,18 +114,18 @@ if (isset($_POST['save'])) {
 
     if ($has_errors) {
       $db->rollBack();
-      redirect_response('./summary.php?s=' . $reg->slug . '&edit');
+      redirect_response('./summary.php');
     }
 
     $db->commit();
-    redirect_response('./summary.php?s=' . $reg->slug);
+    redirect_response('./summary.php');
   } catch (Exception $e) {
     $db->rollBack();
     $_SESSION['fatal_error'] = ['code' => 500, 'message' => $e->getMessage()];
     redirect_response('./error.php');
   }
 
-  redirect_response('./summary.php?s=' . $_GET['s']);
+  redirect_response('./summary.php');
 }
 
 error_response();

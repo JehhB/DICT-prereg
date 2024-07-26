@@ -8,7 +8,6 @@ if (isset($_GET['accept_data_privacy'])) {
   exit();
 }
 
-
 $page = $_GET['p'] ?? 1;
 
 function clear_registration()
@@ -39,7 +38,7 @@ function handle_page_1()
     'email' => FILTER_VALIDATE_EMAIL,
     'name' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/\S+/']],
     'position' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/\S+/']],
-    'sex' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/^[MF]$/']],
+    'sex' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/^(M|F|BLANK|OTHER)$/']],
     'birthday' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/^\d{4}-\d{2}-\d{2}$/']],
     'contact_number' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/^\d{10,}$/']],
     'affiliation' => ['filter' => FILTER_VALIDATE_REGEXP, 'options' => ['regexp' => '/\S+/']],
@@ -185,9 +184,9 @@ function handle_page_3()
     );
 
     $reg->register_booths($_SESSION['register_booths']);
-
     $db->commit();
 
+    async_send_email($reg->slug);
     clear_registration();
     $_SESSION['auth_summary'] = $reg->slug;
     redirect_response('./summary.php?s=' . $reg->slug);
