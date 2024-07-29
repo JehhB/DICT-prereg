@@ -11,7 +11,7 @@ $registered_booths = array_map(function ($v) {
   ]);
 }, $registered_booths);
 
-$booths = execute('SELECT booth_id as id, topic, logo from Booths WHERE event_id = ?', [
+$booths = execute('SELECT booth_id as id, topic, logo from Booths WHERE event_id = ? ORDER BY topic ASC', [
   $reg->event_id
 ])->fetchAll();
 $count = BoothRegistration::count_summary();
