@@ -10,8 +10,21 @@
   --bs-secondary-rgb: 144, 155, 212;
 }
 
-.card {
-  scroll-margin: 20px;
+body {
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.modal {
+  --bs-modal-margin: 3rem 0.5rem 0.5rem 0.5rem;
+}
+
+.modal-dialog {
+  max-height: 75vh;
+}
+
+* {
+  scroll-margin: 2.5rem;
 }
 
 .btn-primary {

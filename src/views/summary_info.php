@@ -9,6 +9,13 @@ $reg = Registration::find($_SESSION['auth_summary']);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <?php include __DIR__ . '/assets.php' ?>
+  <script>
+    $(document).ready(async function() {
+      await sleep(1000);
+      $sched = $('#sched')
+      await scrollToView($sched)
+    });
+  </script>
 </head>
 
 <body>
@@ -71,7 +78,7 @@ $reg = Registration::find($_SESSION['auth_summary']);
             Edit
           </a>
         </div>
-        <div class="card-body">
+        <div class="card-body" id="sched">
           <dl class="row mb-0">
             <?php
             $booths = $reg->get_registered_booths();

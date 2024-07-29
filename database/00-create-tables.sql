@@ -66,7 +66,5 @@ ALTER TABLE
     `BoothRegistration` ADD CONSTRAINT `boothregistration_booth_id_foreign` FOREIGN KEY(`booth_id`) REFERENCES `Booths`(`booth_id`);
 ALTER TABLE
     `Timeslots` ADD CONSTRAINT `timeslots_event_id_foreign` FOREIGN KEY(`event_id`) REFERENCES `Event`(`event_id`);
-    /*
 ALTER TABLE
     `BoothRegistration` ADD CONSTRAINT `boothregistration_registration_id_foreign` FOREIGN KEY(`registration_id`) REFERENCES `Registrations`(`registration_id`) ON DELETE CASCADE;
-    */
