@@ -140,7 +140,7 @@ unset($_SESSION['register_booths']);
           ]);
         }, $timeslots);
 
-        $booths = execute('SELECT booth_id as id, topic, logo from Booths WHERE event_id = ?', [
+        $booths = execute('SELECT booth_id as id, topic, logo from Booths WHERE event_id = ? ORDER BY topic ASC', [
           $_SESSION['register_event_id']
         ])->fetchAll();
         $count = BoothRegistration::count_summary();
