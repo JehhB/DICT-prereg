@@ -26,7 +26,7 @@ unset($_SESSION['register_booths']);
       cc('cursor');
       await sleep(500);
 
-      $l1 = $('label[for="r_1_11"]');
+      $l1 = $('label[for="r_8_8"]');
       await goto($l1);
       await gsap.to($c, {
         duration: 0.250,
@@ -38,10 +38,10 @@ unset($_SESSION['register_booths']);
       await goto($l1.next());
       await sleep(500);
 
-      await click($('#r_1_14'));
+      await click($('#r_8_9'));
       await sleep(500);
 
-      $l2 = $('label[for="r_2_14"]');
+      $l2 = $('label[for="r_9_9"]');
       await goto($l2);
       await gsap.to($c, {
         duration: 0.250,
@@ -52,26 +52,24 @@ unset($_SESSION['register_booths']);
       });
       await sleep(500);
 
-      await click($('#r_2_13'));
+      await click($('#r_9_10'));
       $c1 = $('#c_1')
       await sleep(720);
       await scrollToView($c1);
       await click($c1.find('button'));
       await sleep(500)
-      await click($('#r_2_15'));
+      await click($('#r_9_8'));
       await sleep(500)
 
-      await click($('#r_3_12'), 250);
+      await click($('#r_10_13'), 250);
       await sleep(500)
-      await click($('#r_4_11'), 250);
+      await click($('#r_11_14'), 250);
       await sleep(500)
-      await click($('#r_5_17'), 250);
+      await click($('#r_12_11'), 250);
       await sleep(500)
-      await click($('#r_6_13'), 250);
+      await click($('#r_13_10'), 250);
       await sleep(500)
-      await click($('#r_7_20'), 250);
-      await sleep(500)
-      await click($('#r_8_16'), 250);
+      await click($('#r_14_12'), 250);
       await sleep(500)
       await click($('input[type="submit"][name="next"]'));
 

@@ -91,7 +91,7 @@ if (php_sapi_name() === 'cli') {
     $mail->AltBody = $raw;
 
     $mail->addStringEmbeddedImage(base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $reg->qr_code)), "qrcode_cid", "qr_code.png", "base64", "image/png");
-    $mail->send();
+    //$mail->send();
 
     $reg->mark_email_sent();
   } catch (Exception $e) {
