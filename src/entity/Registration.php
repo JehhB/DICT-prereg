@@ -3,7 +3,7 @@
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 
-define('MAX_SLOTS', 35);
+define('MAX_SLOTS', 220);
 
 class Registration
 {
