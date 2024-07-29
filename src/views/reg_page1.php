@@ -88,7 +88,7 @@ foreach (array_keys($_SESSION) as $k) {
 
   <?php if (!isset($_SESSION['register_privacy']) || true): ?>
     <div class="modal modal-lg fade" tabindex="-1" data-bs-backdrop="static" x-data x-init="new bootstrap.Modal($el).show()">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Data Privacy Content</h5>
