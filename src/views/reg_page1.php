@@ -15,15 +15,23 @@ foreach (array_keys($_SESSION) as $k) {
 
   <script>
     let first = true;
+    $(document).ready(function() {
+      window.scrollTo(0, 0);
+    });
+
     $(document).on("click", async function() {
       if (!first) return;
       first = false;
 
-      window.scrollTo(0, 0);
+      await sleep(500);
+
       cc('cursor');
       await sleep(500);
 
       $c = $('#cursor');
+
+      await scrollToView($('#p2'));
+      await sleep(500);
 
       $agree = $('[data-bs-dismiss="modal"]')
       await click($agree);
@@ -102,7 +110,7 @@ foreach (array_keys($_SESSION) as $k) {
               Team has instituted appropriate organizational, technical, and physical security
               measures to ensure the protection of the participants’ personal data.
             </p>
-            <p>
+            <p id="p2">
               By pressing <strong>"I Agree,"</strong> I am providing consent to the <strong>DICT</strong> to gather and
               process my information for my participation in this training. <strong>My details will not be disclosed
                 to any third-party organizations or affiliates of DICT and its partners</strong>. The information will be

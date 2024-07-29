@@ -19,8 +19,8 @@ body {
   --bs-modal-margin: 3rem 0.5rem 0.5rem 0.5rem;
 }
 
-.modal-dialog {
-  max-height: 75vh;
+.modal-content {
+  max-height: 60vh !important;
 }
 
 * {
