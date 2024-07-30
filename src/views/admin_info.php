@@ -40,7 +40,7 @@ $num_page = ceil($count / 10.0);
             <?php if ($count == 0) {
               echo "No registration";
             } else {
-              echo "Showing " . strval($offset + 1) . '-' . strval($offset + $count_page) . " of " . $count . " restistrations";
+              echo "Showing " . strval($offset + 1) . '-' . strval($offset + $count_page) . " of " . $count . " registrations";
             } ?>
           </em>
           <div class="dropdown mb-4 col-auto ms-auto">
