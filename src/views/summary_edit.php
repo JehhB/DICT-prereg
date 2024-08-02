@@ -27,7 +27,7 @@ $count = BoothRegistration::count_summary();
   <?php include __DIR__ . '/assets.php' ?>
   <script id="init-data" type="application/json">
     <?php
-    $count = BoothRegistration::count_summary();
+    $count = BoothRegistration::count_summary($reg->id);
     $count['_MAX_SLOTS'] = MAX_SLOTS;
     echo json_encode($count);
     ?>

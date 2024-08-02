@@ -9,4 +9,4 @@
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
 <link href=" https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/pulse/bootstrap.min.css " rel="stylesheet">
 <link rel="stylesheet" href="./assets/style.css">
-<script src="./assets/script.js"></script>
+<script src="./assets/script-no-ajax.js"></script>
