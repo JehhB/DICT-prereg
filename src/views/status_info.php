@@ -182,6 +182,28 @@ SQL;
     echo json_encode($result);
     ?>
   </script>
+  <script id="affiliationData" type="application/json">
+    <?php
+    $sql = <<<SQL
+SELECT
+    MIN(r.affiliation) AS affiliation,
+    SUM(CASE WHEN r.event_id = 1 THEN 1 ELSE 0 END) AS tuguegarao_count,
+	SUM(CASE WHEN r.event_id = 2 THEN 1 ELSE 0 END) AS cauayan_count
+FROM Registrations r
+GROUP BY LOWER(r.affiliation)
+ORDER BY MIN(r.affiliation) ASC;
+SQL;
+    $result = execute($sql)->fetchAll();
+    $result = array_map(function ($v) {
+      return [
+        'affiliation' => html_entity_decode($v['affiliation']),
+        'tuguegarao_count' => intval($v['tuguegarao_count']),
+        'cauayan_count' => intval($v['cauayan_count']),
+      ];
+    }, $result);
+    echo json_encode($result);
+    ?>
+  </script>
 
   <?php include __DIR__ . '/assets.php' ?>
 
@@ -276,9 +298,6 @@ SQL;
             type: 'bar'
           }
         ],
-        init() {
-          console.log(this.events);
-        },
         createChart(canvas, type, title, data) {
           new Chart(canvas, {
             type: type,
@@ -315,8 +334,51 @@ SQL;
     }
 
 
+    function affiliation() {
+      const list = JSON.parse(document.getElementById('affiliationData').textContent);
+
+      return {
+        query: '',
+        selected: '',
+
+        init() {
+          this.$watch('query', q => {
+            if (q.length > 0) this.selected = '';
+          })
+        },
+
+        get searchResult() {
+          if (this.selected == 'csu') {
+            return list.filter(v => {
+              const lower = v.affiliation.toLowerCase();
+              return lower.includes('cagayan state university') || lower.includes('csu');
+            });
+          }
+          if (this.selected == 'isu') {
+            return list.filter(v => {
+              const lower = v.affiliation.toLowerCase();
+              return lower.includes('isabela state university') || lower.includes('isu');
+            });
+          }
+
+          return list.filter(v => v.affiliation.toLowerCase().includes(this.query.toLowerCase()));
+        },
+
+        get total() {
+          return this.searchResult.reduce((prev, cur) => ({
+            'tuguegarao_count': prev.tuguegarao_count + cur.tuguegarao_count,
+            'cauayan_count': prev.cauayan_count + cur.cauayan_count,
+          }), {
+            tuguegarao_count: 0,
+            cauayan_count: 0,
+          });
+        }
+      };
+    }
+
     document.addEventListener('alpine:init', () => {
       Alpine.data('eventStats', eventStats);
+      Alpine.data('affiliation', affiliation);
     })
   </script>
   <style>
@@ -390,12 +452,69 @@ SQL;
         </div>
       </div>
 
+      <div class="card mb-4 shadow-sm" x-data="affiliation">
+        <div class="card-header bg-secondary d-flex">
+          Affilations
+        </div>
+        <div class="card-body" style="max-height: 500px; overflow-y: scroll;">
+          <div class="row mb-3">
+            <label for="affiliationFilter" class="col-auto">Filter</label>
+            <input id="affiliationFilter" type="text" x-model.debounce.250ms="query" class="col" placeholder="e.g. CSU">
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" type="radio" value="csu" id="csu" name="filter" x-model="selected">
+            <label class="form-check-label" for="csu">
+              Cagayan State University
+            </label>
+          </div>
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="radio" value="isu" id="isu" name="filter" x-model="selected">
+            <label class="form-check-label" for="isu">
+              Isabela State University
+            </label>
+          </div>
+
+          <button class="btn btn-sm btn-secondary mb-3" @click="selected='';query=''">Clear filter</button>
+
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Affilation</td>
+                  <th>Tuguegarao City</td>
+                  <th>Cauayan City</td>
+                </tr>
+              </thead>
+
+              <tbody>
+                <template x-for="affiliation in searchResult" :key="affiliation.affiliation">
+                  <tr>
+                    <td x-text="affiliation.affiliation"></td>
+                    <td x-text="affiliation.tuguegarao_count"></td>
+                    <td x-text="affiliation.cauayan_count"></td>
+                  </tr>
+                </template>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td><strong>Total</strong></td>
+                  <td><strong x-text="total.tuguegarao_count"></strong></td>
+                  <td><strong x-text="total.cauayan_count"></strong></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+        </div>
+      </div>
+
       <template x-for="(eventData, eventName) in events" :key="eventName">
         <div class="card mb-4">
           <div class="card-header" x-text="eventName"></div>
           <div class="card-body">
             <template x-for="section in sections" :key="section.title">
-              <div class="mb-4" x-init="console.log(eventData, eventName)">
+              <div class="mb-4">
                 <h3 class="mb-3" x-text="section.title"></h3>
                 <div class="row">
                   <dl class="row mb-3">
@@ -413,6 +532,7 @@ SQL;
           </div>
         </div>
       </template>
+
 
     </div>
   </div>
