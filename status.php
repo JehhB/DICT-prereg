@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 if (isset($_GET['logout'])) {
   unset($_SESSION['super_admin']);
+  redirect_response('./status.php');
 } else if (!isset($_SESSION['super_admin'])) {
   include_once __DIR__ . '/src/views/status_auth.php';
 } else {
