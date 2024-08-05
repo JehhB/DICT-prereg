@@ -16,6 +16,10 @@ if (isset($_GET['logout'])) {
   redirect_response('./status.php');
 } else if (!isset($_SESSION['super_admin'])) {
   include_once __DIR__ . '/src/views/status_auth.php';
+} else if (isset($_GET['report'])) {
+  include_once __DIR__ . '/src/views/status_report.php';
+} else if (isset($_GET['xlsx'])) {
+  include_once __DIR__ . '/src/views/status_xlsx.php';
 } else {
   include_once __DIR__ . '/src/views/status_info.php';
 }

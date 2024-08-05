@@ -51,3 +51,10 @@ function execute($sql, $params = array())
 
   return $stmt;
 }
+
+
+function placeholder(array $arr)
+{
+  $length = count($arr);
+  return implode(',', array_fill(0, $length, '?'));
+}

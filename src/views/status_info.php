@@ -400,7 +400,12 @@ SQL;
       <div class="card mb-4 shadow-sm">
         <div class="card-header bg-secondary d-flex">
           Event statistics
-          <a href="./status.php?logout=logout" class="ms-auto col-auto btn btn-primary btn-sm">Logout</a>
+          <?php
+          $sql = "SELECT topic FROM Booths ORDER BY topic ASC LIMIT 1";
+          $topic = execute($sql)->fetchColumn();
+          ?>
+          <a href="./status.php?report=<?= urlencode($topic) ?>" class="ms-auto col-auto btn btn-primary btn-sm">Generate Report</a>
+          <a href="./status.php?logout=logout" class="ms-2 col-auto btn btn-secondary btn-sm">Logout</a>
         </div>
         <div class="card-body">
           <div class="row">
