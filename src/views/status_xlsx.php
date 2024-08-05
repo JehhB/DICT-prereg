@@ -1,31 +1,25 @@
 <?php
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-function createSpreadsheet($boothTopic, $pdo)
+function createSpreadsheet($boothTopic, $pdo, ?array &$qrFiles = null)
 {
   $spreadsheet = new Spreadsheet();
 
-  $stmtBooth = $pdo->prepare("SELECT b.booth_id, b.topic, e.event_name, e.event_venue 
-                              FROM Booths b 
-                              JOIN Event e ON b.event_id = e.event_id 
-                              WHERE b.topic = ?");
-  $stmtBooth->execute([$boothTopic]);
-  $boothInfo = $stmtBooth->fetch(PDO::FETCH_ASSOC);
-
-  if (!$boothInfo) {
-    error_response(404, 'Not found');
+  if (is_null($qrFiles)) {
+    $qrFiles = [];
   }
-
-  $boothId = [$boothInfo['booth_id']];
-  $eventName = $boothInfo['event_name'];
-  $eventVenue = $boothInfo['event_venue'];
 
 
   $stmtBooth = $pdo->prepare("SELECT booth_id FROM Booths WHERE topic = ?");
   $stmtBooth->execute([$boothTopic]);
   $boothId = $stmtBooth->fetchAll(PDO::FETCH_COLUMN);
+
+  if (count($boothId) == 0) {
+    error_response(404, 'Not found');
+  }
 
   $placeholderBooth = placeholder($boothId);
 
@@ -52,6 +46,17 @@ function createSpreadsheet($boothTopic, $pdo)
   while ($timeslot = $stmtTimeslots->fetch(PDO::FETCH_ASSOC)) {
     $stmtRegistrations->execute(array_merge($boothId, [$timeslot['timeslot_id']]));
     $registrations = $stmtRegistrations->fetchAll(PDO::FETCH_ASSOC);
+
+
+    $stmtBooth = $pdo->prepare("SELECT e.*
+                              FROM Timeslots t
+                              JOIN Event e ON e.event_id = t.event_id 
+                              WHERE t.timeslot_id = ?");
+    $stmtBooth->execute([$timeslot['timeslot_id']]);
+    $boothInfo = $stmtBooth->fetch(PDO::FETCH_ASSOC);
+
+    $eventName = $boothInfo['event_name'];
+    $eventVenue = $boothInfo['event_venue'];
 
     $batchCount = ceil(count($registrations) / 50);
     for ($batch = 0; $batch < $batchCount; $batch++) {
@@ -92,6 +97,7 @@ function createSpreadsheet($boothTopic, $pdo)
 
       // Fill data
       $rowIndex = 7;
+      $imageIndex = 1;
       for ($i = $batch * 50; $i < min(($batch + 1) * 50, count($registrations)); $i++) {
         $registration = $registrations[$i];
         $sheet->fromArray([
@@ -106,12 +112,21 @@ function createSpreadsheet($boothTopic, $pdo)
           $registration['is_indigenous'] ? 'Yes' : 'No'
         ], NULL, 'A' . $rowIndex);
 
-        // Generate QR code URL
-        $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" .
-          urlencode("https://dtechsideprojects.online/summary.php?s=" . $registration['slug']);
+        $qr = preg_replace('/^data:image\/png;base64,/', '', $registration['qr_code']);
+        $qrImageData = base64_decode($qr);
+        $tempFile = tempnam(sys_get_temp_dir(), 'qr_') . '.png';
+        file_put_contents($tempFile, $qrImageData);
 
-        // Add QR code using IMAGE() function
-        $sheet->setCellValue('J' . $rowIndex, '=IMAGE("' . $qrCodeUrl . '")');
+        $drawing = new Drawing();
+        $drawing->setName('QR Code');
+        $drawing->setDescription('QR Code');
+        $drawing->setPath($tempFile);
+        $drawing->setCoordinates('J' . $rowIndex);
+        $drawing->setWidth(48);
+        $drawing->setHeight(48);
+        $drawing->setWorksheet($sheet);
+
+        $qrFiles[] = $tempFile;
 
         $rowIndex++;
       }
@@ -130,16 +145,20 @@ function createSpreadsheet($boothTopic, $pdo)
 
 try {
   $boothTopic = $_GET['xlsx'] ?? '';
-  $spreadsheet = createSpreadsheet($boothTopic, getDB());
+  $qr = [];
+  $spreadsheet = createSpreadsheet($boothTopic, getDB(), $qr);
   $tempFile = tempnam(sys_get_temp_dir(), 'excel_');
   $writer = new Xlsx($spreadsheet);
   $writer->save($tempFile);
 
   header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  header('Content-Disposition: attachment; filename="registrations_' . str_replace(' ', '_', $boothTopic) . '.xlsx"');
+  header('Content-Disposition: attachment; filename="registrations_' . str_replace(' ', '_', strtolower($boothTopic)) . '.xlsx"');
   header('Cache-Control: max-age=0');
 
   readfile($tempFile);
+  foreach ($qr as $t) {
+    unlink($t);
+  }
   unlink($tempFile);
 } catch (Exception $e) {
   echo $e->getMessage();
