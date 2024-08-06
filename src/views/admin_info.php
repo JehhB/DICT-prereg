@@ -1,11 +1,12 @@
 <?php
+define('PAGE_RANGE', 2);
 $booth = Booth::find($_SESSION['auth_admin']);
 
 $timeslot_id = $_GET['t'] ?? null;
 $page = intval($_GET['p'] ?? 1);
 $offset = ($page - 1) * 10;
 
-$reg_results = $booth->get_booth_registrations($timeslot_id, 10, $offset);
+$reg_results = $booth->get_booth_registrations($timeslot_id, 25, $offset);
 $time_results = execute("SELECT timeslot_id, timestart, timeend FROM Timeslots WHERE event_id = ?", [$booth->event_id])->fetchAll();
 $count_page = count($reg_results);
 
@@ -112,15 +113,48 @@ $num_page = ceil($count / 10.0);
 
         <div class="row mt-4">
           <nav class="mx-auto col-auto">
-            <ul class="pagination">
+            <ul class="pagination pagination-sm">
               <?php if ($page > 1): ?>
                 <li class="page-item"><a class="page-link" href="./admin.php?<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $page - 1 ?>">Previous</a></li>
               <?php else:  ?>
                 <li class="page-item"><a class="page-link disabled" href="#">Previous</a></li>
               <?php endif; ?>
-              <?php for ($i = 1; $i <= $num_page; ++$i): ?>
-                <li class="page-item"><a class="page-link" href="./admin.php?<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $i ?>"><?= $i ?></a></li>
+
+
+              <?php if ($page > PAGE_RANGE + 1): ?>
+                <li class="page-item">
+                  <a class="page-link" href="./admin.php?<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=1">1</a>
+                </li>
+
+                <?php if ($page > PAGE_RANGE + 2): ?>
+                  <li class="page-item disabled">
+                    <span class="page-link">&hellip;</span>
+                  </li>
+                <?php endif ?>
+              <?php endif ?>
+
+              <?php for ($i = max(1, $page - PAGE_RANGE); $i <= min($num_page, $page + PAGE_RANGE); ++$i): ?>
+                <li class="page-item">
+                  <a
+                    class="page-link <?php if ($i == $page) echo 'active'; ?>"
+                    href="./admin.php?<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $i ?>">
+                    <?= $i ?>
+                  </a>
+                </li>
               <?php endfor; ?>
+
+              <?php if ($page < $num_page - PAGE_RANGE): ?>
+                <?php if ($page < $num_page - PAGE_RANGE - 1): ?>
+                  <li class="page-item disabled">
+                    <span class="page-link">&hellip;</span>
+                  </li>
+                <?php endif ?>
+                <li class="page-item">
+                  <a class="page-link" href="./admin.php?<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $num_page ?>"><?= $num_page ?></a>
+                </li>
+              <?php endif ?>
+
+
               <?php if ($page < $num_page): ?>
                 <li class="page-item"><a class="page-link" href="./admin.php?<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $page + 1 ?>">Next</a></li>
               <?php else:  ?>
@@ -129,7 +163,6 @@ $num_page = ceil($count / 10.0);
             </ul>
           </nav>
         </div>
-
       </div>
     </div>
   </div>

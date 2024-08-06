@@ -124,6 +124,7 @@ function createSpreadsheet($boothTopic, $pdo)
   }
 
   $spreadsheet->removeSheetByIndex(0);
+  $spreadsheet->setActiveSheetIndex(0);
   return $spreadsheet;
 }
 
