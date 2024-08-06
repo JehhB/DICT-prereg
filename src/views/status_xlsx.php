@@ -1,17 +1,14 @@
 <?php
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
-function createSpreadsheet($boothTopic, $pdo, ?array &$qrFiles = null)
+function createSpreadsheet($boothTopic, $pdo)
 {
-  $spreadsheet = new Spreadsheet();
-
-  if (is_null($qrFiles)) {
-    $qrFiles = [];
-  }
-
+  $templateFile = __DIR__ . '/template.xlsx';
+  $spreadsheet = IOFactory::load($templateFile);
+  $templateSheet = $spreadsheet->getActiveSheet();
 
   $stmtBooth = $pdo->prepare("SELECT booth_id FROM Booths WHERE topic = ?");
   $stmtBooth->execute([$boothTopic]);
@@ -42,16 +39,15 @@ function createSpreadsheet($boothTopic, $pdo, ?array &$qrFiles = null)
         ORDER BY r.registration_date
     ");
 
-  $sheetIndex = 0;
+  $sheetIndex = 1;
   while ($timeslot = $stmtTimeslots->fetch(PDO::FETCH_ASSOC)) {
     $stmtRegistrations->execute(array_merge($boothId, [$timeslot['timeslot_id']]));
     $registrations = $stmtRegistrations->fetchAll(PDO::FETCH_ASSOC);
 
-
     $stmtBooth = $pdo->prepare("SELECT e.*
-                              FROM Timeslots t
-                              JOIN Event e ON e.event_id = t.event_id 
-                              WHERE t.timeslot_id = ?");
+                                  FROM Timeslots t
+                                  JOIN Event e ON e.event_id = t.event_id 
+                                  WHERE t.timeslot_id = ?");
     $stmtBooth->execute([$timeslot['timeslot_id']]);
     $boothInfo = $stmtBooth->fetch(PDO::FETCH_ASSOC);
 
@@ -60,106 +56,86 @@ function createSpreadsheet($boothTopic, $pdo, ?array &$qrFiles = null)
 
     $batchCount = ceil(count($registrations) / 50);
     for ($batch = 0; $batch < $batchCount; $batch++) {
-      $sheetName = date('Y-m-d H.i', strtotime($timeslot['timestart'])) .
-        " " . date('H.i', strtotime($timeslot['timeend']));
+      $sheetName = date('m-d h.ia', strtotime($timeslot['timestart'])) .
+        " " . date('h.ia', strtotime($timeslot['timeend']));
       if ($batchCount > 1) {
         $sheetName .= "(Batch " . ($batch + 1) . ")";
       }
 
-      $sheet = ($sheetIndex === 0) ? $spreadsheet->getActiveSheet() : $spreadsheet->createSheet();
+      $sheet = clone $templateSheet;
       $sheet->setTitle($sheetName);
+      $spreadsheet->addSheet($sheet, $sheetIndex);
 
-      // Add event information headers
-      $sheet->setCellValue('A1', 'Event Name:');
-      $sheet->setCellValue('B1', $eventName);
-      $sheet->setCellValue('A2', 'Event Venue:');
-      $sheet->setCellValue('B2', $eventVenue);
-      $sheet->setCellValue('A3', 'Booth Topic:');
-      $sheet->setCellValue('B3', $boothTopic);
-      $sheet->setCellValue('A4', 'Timeslot:');
-      $sheet->setCellValue('B4', date('Y-m-d H:i', strtotime($timeslot['timestart'])) .
-        ' - ' . date('H:i', strtotime($timeslot['timeend'])));
+      // Update event information
+      $sheet->setCellValue('C1', $eventName);
+      $sheet->setCellValue('C2', $eventVenue);
+      $sheet->setCellValue('C3', $boothTopic);
+      $sheet->setCellValue('C4', date('Y-m-d h:ia', strtotime($timeslot['timestart'])) .
+        ' - ' . date('h:ia', strtotime($timeslot['timeend'])));
 
-      // Set headers for registration data
-      $headers = [
-        'Name',
-        'Sex',
-        'Birthday',
-        'Email',
-        'Contact Number',
-        'Affiliation',
-        'Position',
-        'Type',
-        'Is Indigenous',
-        'QR Code'
-      ];
-      $sheet->fromArray($headers, NULL, 'A6');
+      $sheet
+        ->getStyle("A6:J6")
+        ->getBorders()
+        ->getBottom()
+        ->setBorderStyle(Border::BORDER_MEDIUM);
 
       // Fill data
-      $rowIndex = 7;
-      $imageIndex = 1;
+      $rowIndex = 7;  // Assuming the data starts at row 7 in the template
       for ($i = $batch * 50; $i < min(($batch + 1) * 50, count($registrations)); $i++) {
         $registration = $registrations[$i];
+
+        $contact = strval($registration['contact_number']);
+        if (str_starts_with($contact, '9')) $contact = '0' . $contact;
+
         $sheet->fromArray([
-          $registration['name'],
-          $registration['sex'],
+          $rowIndex - 6,
+          html_entity_decode($registration['name']),
+          match ($registration['sex']) {
+            'M' => 'Male',
+            'F' => 'Female',
+            'OTHER' => 'Others',
+            'BLANK' => 'Prefer not to mention',
+          },
           $registration['birthday'],
           $registration['email'],
-          $registration['contact_number'],
-          $registration['affiliation'],
-          $registration['position'],
-          $registration['type'],
+          $contact,
+          html_entity_decode($registration['affiliation']),
+          html_entity_decode($registration['position']),
+          html_entity_decode($registration['type']),
           $registration['is_indigenous'] ? 'Yes' : 'No'
         ], NULL, 'A' . $rowIndex);
 
-        $qr = preg_replace('/^data:image\/png;base64,/', '', $registration['qr_code']);
-        $qrImageData = base64_decode($qr);
-        $tempFile = tempnam(sys_get_temp_dir(), 'qr_') . '.png';
-        file_put_contents($tempFile, $qrImageData);
-
-        $drawing = new Drawing();
-        $drawing->setName('QR Code');
-        $drawing->setDescription('QR Code');
-        $drawing->setPath($tempFile);
-        $drawing->setCoordinates('J' . $rowIndex);
-        $drawing->setWidth(48);
-        $drawing->setHeight(48);
-        $drawing->setWorksheet($sheet);
-
-        $qrFiles[] = $tempFile;
+        $sheet->getRowDimension($rowIndex)->setRowHeight(24, 'pt');
+        $sheet
+          ->getStyle("A$rowIndex:J$rowIndex")
+          ->getBorders()
+          ->getBottom()
+          ->setBorderStyle(Border::BORDER_THIN);
+        $sheet
+          ->getStyle("A$rowIndex:J$rowIndex")
+          ->getAlignment()
+          ->setVertical(Alignment::VERTICAL_TOP);
 
         $rowIndex++;
-      }
-
-      // Auto-size columns
-      foreach (range('A', 'J') as $col) {
-        $sheet->getColumnDimension($col)->setAutoSize(true);
       }
 
       $sheetIndex++;
     }
   }
 
+  $spreadsheet->removeSheetByIndex(0);
   return $spreadsheet;
 }
 
 try {
   $boothTopic = $_GET['xlsx'] ?? '';
-  $qr = [];
-  $spreadsheet = createSpreadsheet($boothTopic, getDB(), $qr);
-  $tempFile = tempnam(sys_get_temp_dir(), 'excel_');
-  $writer = new Xlsx($spreadsheet);
-  $writer->save($tempFile);
-
+  $spreadsheet = createSpreadsheet($boothTopic, getDB());
+  $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
   header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   header('Content-Disposition: attachment; filename="registrations_' . str_replace(' ', '_', strtolower($boothTopic)) . '.xlsx"');
   header('Cache-Control: max-age=0');
 
-  readfile($tempFile);
-  foreach ($qr as $t) {
-    unlink($t);
-  }
-  unlink($tempFile);
+  $writer->save('php://output');
 } catch (Exception $e) {
   echo $e->getMessage();
 }

@@ -67,8 +67,6 @@ $stmtRegistrations->execute($params);
           <?php foreach ($topics as $t): ?>
             <li><a class="dropdown-item <?php if ($_GET['report'] == $t) echo 'active'; ?>" href="./status.php?report=<?= htmlspecialchars($t) ?>"><?= htmlspecialchars($t) ?></a></li>
           <?php endforeach; ?>
-          <li><a class="dropdown-item" href="#">Another action</a></li>
-          <li><a class="dropdown-item" href="#">Something else here</a></li>
         </ul>
       </div>
       <a href="./status.php?xlsx=<?= $_GET['report'] ?>" class="col-auto ms-3 btn btn-primary">Save spreadsheet</a>
