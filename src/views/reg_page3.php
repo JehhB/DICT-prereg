@@ -6,9 +6,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Preregistration</title>
   <?php include __DIR__ . '/assets.php' ?>
+  <script src="/assets/cdn/signature_pad.umd.min.js"></script>
 </head>
 
-<body class="bg-light-subtle">
+<body class="bg-light-subtle" x-data="attendance">
+
+  <?php if (flash_has('errors', 'form')): ?>
+    <div class="modal fade" tabindex="-1" x-data x-init="new bootstrap.Modal($el).show()">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Error</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p><?= flash_get('errors', 'form') ?></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <?php endif ?>
+  <div class="modal fade" tabindex="-1" id="privacy">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Privacy Notice</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>
+            (R.A. 10173): We need your personal data to provide verifiable evidence in support of this event and that you participated therein. We will include your data in our printed and electronic reports that we will send through secured channels.
+          </p>
+          <p>
+            By signing herein, we will continuously keep your data under lock and key, and will limit their use to authorized staff. If you do not agree, please inform us and we will permanently destroy your data after we have sent our reports.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <main class="container my-3 my-sm-4">
     <div class="col col-md-11 col-lg-9 col-xl-8 col-xxl-7 mx-auto">
       <div class="card mb-3 shadow-sm" style="max-height: 250px;">
@@ -102,7 +144,25 @@
               <?php endforeach ?>
             </dl>
           </div>
+
+          <div class="row px-3">
+            <div class="col-12 mb-3">
+              <input type="hidden" name="signature" :value="signature">
+              <label for="signature-pad" class="form-label">Signature</label>
+              <div class="ratio ratio-2x1 mb-3">
+                <canvas x-ref="canvas" id="signature-pad" class="form-control w-full h-full"></canvas>
+              </div>
+              <button type="button" class="btn btn-sm btn-secondary" @click="clear">Clear signature</button>
+            </div>
+
+
+            <small class="mb-3">
+              By submitting this form, I agree to the collection and processing of my data stated in this
+              <a role="button" class="btn-link" style="text-decoration: none;" data-bs-toggle="modal" data-bs-target="#privacy">Privacy Notice</a>
+            </small>
+          </div>
         </div>
+
 
         <div class="row px-3">
           <input type="submit" name="prev" class="btn btn-primary col-auto" value="Prev">
@@ -129,6 +189,7 @@
         <div class="modal-footer">
           <form action="#" method="post">
             <?= csrf_field() ?>
+            <input type="hidden" name="signature" :value="signature">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             <input type="submit" name="submit" class="btn btn-success" value="Submit">
           </form>

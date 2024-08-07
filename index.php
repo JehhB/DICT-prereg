@@ -166,6 +166,10 @@ function handle_page_3()
   if (!isset($_SESSION['_PASSED_1'])) redirect_response('./?p=1');
   if (!isset($_SESSION['_PASSED_2'])) redirect_response('./?p=2');
 
+  if (!isset($_POST['signature']) or strlen($_POST['signature']) == 0) {
+    flash_set('errors', 'form', 'You must affix your signature');
+    redirect_response('./?p=3');
+  }
 
   // Stop other operation in the database to avoid exceeding the limit
   execute("SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE");
@@ -186,6 +190,11 @@ function handle_page_3()
       $_SESSION['register_is_indigenous']
     );
 
+    execute('INSERT INTO Attendances (registration_id, signature, is_walkin) VALUES (?,?, TRUE)', [
+      $reg->id,
+      $_POST['signature'],
+    ]);
+
     $reg->register_booths($_SESSION['register_booths']);
     $db->commit();
 
@@ -196,6 +205,8 @@ function handle_page_3()
   } catch (Exception $e) {
     $db->rollBack();
     $_SESSION['fatal_error'] = ['code' => 500, 'message' => $e->getMessage()];
+    echo $e->getMessage();
+    exit();
     redirect_response('./error.php');
   }
 }
