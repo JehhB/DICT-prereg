@@ -7,7 +7,7 @@ Preregistration website
 1. Download CDN files locally
 
 ```sh
-wget -i cdn.txt -P /assets/cdn/
+wget -i cdn.txt -P /assets/cdn/ -N
 ```
 
 2. Edit email credentials by copying `/src/.env.template` to `/src/.env` and modify relevant fields
@@ -27,7 +27,7 @@ docker compose up
 1. Download CDN files locally
 
 ```sh
-wget -i cdn.txt -P /assets/cdn/
+wget -i cdn.txt -P /assets/cdn/ -N
 ```
 
 2. Edit email credentials by copying `/src/.env.template` to `/src/.env` and modify relevant fields

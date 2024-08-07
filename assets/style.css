@@ -2,6 +2,10 @@
   display: none !important;
 }
 
+.ratio-2x1 {
+  --bs-aspect-ratio: 50%;
+}
+
 .card {
   scroll-margin: 2rem;
 }

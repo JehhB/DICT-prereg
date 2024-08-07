@@ -100,10 +100,124 @@ function description(init = '') {
   };
 }
 
+function attendance() {
+  return {
+    data: null,
+    isLoading: false,
+    error: {
+      email: false,
+      qr: false,
+    },
+
+    signaturePad: null,
+    signature: null,
+
+    init() {
+      const canvas = this.$refs.canvas;
+      this.signaturePad = new SignaturePad(canvas, {
+        backgroundColor: 'rgb(255, 255, 255)'
+      });
+
+      const resizeCanvas = () => {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio);
+        this.signaturePad.fromData(this.signaturePad.toData());
+      }
+
+      this.signaturePad.addEventListener('endStroke', () => {
+        this.signature = this.signaturePad.isEmpty() ? null : this.signaturePad.toDataURL('image/jpeg');
+      });
+
+      window.addEventListener("resize", resizeCanvas);
+      this.signature = null;
+      resizeCanvas();
+    },
+
+    clear() {
+      this.signaturePad.clear();
+      this.signature = null;
+    },
+
+    clearData() {
+      this.data = null;
+      this.clear();
+      this.$refs.email.value = '';
+      this.error = {
+        email: false,
+        qr: false,
+      };
+    },
+
+
+    fetchEmail(email) {
+      this.isLoading = true;
+      this.error = {
+        email: false,
+        qr: false,
+      };
+
+      fetch('./attendance.php?email=' + email)
+        .then((resp) => {
+          this.isLoading = false;
+          if (resp.status != 200) {
+            this.error.email = "Invalid email. Please register first";
+            return null;
+          } else {
+            return resp.json();
+          }
+        }).then((data) => {
+          this.data = data;
+        }).catch(() => {
+          this.isLoading = false;
+          this.error.email = "Failed to connect to server";
+        });
+    }
+  };
+}
+
+function qrCode() {
+  const config = { fps: 10, qrbox: { width: '250px', height: '250px' } };
+  const camera = { facingMode: "environment" };
+
+  return {
+    scanning: false,
+    modal: null,
+    scanner: null,
+
+    init() {
+      this.modal = new bootstrap.Modal(this.$refs.modal);
+      this.scanner = new Html5Qrcode('scanner');
+
+      this.$watch('scanning', (s) => {
+        if (s) {
+          this.modal.show();
+          this.scanner.start(camera, config, (t) => {
+            this.$dispatch('scan', t);
+            this.scanning = false;
+          });
+        } else {
+          this.modal.hide();
+          this.scanner.stop();
+        }
+      });
+
+      this.$refs.modal.addEventListener('hide.bs.modal', () => {
+        this.scanning = false;
+      });
+    },
+  };
+}
+
+
+
 document.addEventListener('alpine:init', () => {
   Alpine.data('radio', radio);
   Alpine.data('form', form);
   Alpine.data('description', description);
+  Alpine.data('attendance', attendance);
+  Alpine.data('qrCode', qrCode);
 })
 
 document.addEventListener('DOMContentLoaded', () => {
