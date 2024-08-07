@@ -54,6 +54,7 @@ function createSpreadsheet($boothTopic, $pdo)
     $eventName = $boothInfo['event_name'];
     $eventVenue = $boothInfo['event_venue'];
 
+
     $batchCount = ceil(count($registrations) / 50);
     for ($batch = 0; $batch < $batchCount; $batch++) {
       $sheetName = date('m-d h.ia', strtotime($timeslot['timestart'])) .
@@ -61,6 +62,12 @@ function createSpreadsheet($boothTopic, $pdo)
       if ($batchCount > 1) {
         $sheetName .= "(Batch " . ($batch + 1) . ")";
       }
+
+      $batchRegistrations = array_slice($registrations, $batch * 50, 50);
+
+      usort($batchRegistrations, function ($a, $b) {
+        return strcmp(strtolower($a['name']), strtolower($b['name']));
+      });
 
       $sheet = clone $templateSheet;
       $sheet->setTitle($sheetName);
@@ -81,9 +88,7 @@ function createSpreadsheet($boothTopic, $pdo)
 
       // Fill data
       $rowIndex = 7;  // Assuming the data starts at row 7 in the template
-      for ($i = $batch * 50; $i < min(($batch + 1) * 50, count($registrations)); $i++) {
-        $registration = $registrations[$i];
-
+      foreach ($batchRegistrations as $registration) {
         $contact = strval($registration['contact_number']);
         if (str_starts_with($contact, '9')) $contact = '0' . $contact;
 
