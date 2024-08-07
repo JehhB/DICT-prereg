@@ -46,14 +46,14 @@ class Booth
     return password_verify($password, $this->password_hash);
   }
 
-  public function get_booth_registrations(mixed $timeslot_id = null, $limit = 10, $offset = 0): array
+  public function get_booth_registrations(mixed $timeslot_id = null, $limit = 10, $offset = 0, $search = ''): array
   {
     $sql = 'SELECT r.*, t.timestart, t.timeend
           FROM BoothRegistration br
           JOIN Timeslots t ON br.timeslot_id = t.timeslot_id
           JOIN Registrations r ON r.registration_id = br.registration_id
-          WHERE br.booth_id = ?';
-    $params = [[$this->id, PDO::PARAM_INT]];
+          WHERE br.booth_id = ? AND LOWER(r.name) LIKE ?';
+    $params = [[$this->id, PDO::PARAM_INT], '%' . strtolower($search) . '%'];
 
     if (!is_null($timeslot_id)) {
       $sql .= ' AND br.timeslot_id = ?';
@@ -92,12 +92,13 @@ class Booth
   }
 
 
-  public function count_booth_registrations(mixed $timeslot_id = null): int
+  public function count_booth_registrations(mixed $timeslot_id = null, $search = ""): int
   {
     $sql = 'SELECT COUNT(*) as total
             FROM BoothRegistration br
-            WHERE br.booth_id = ?';
-    $params = [$this->id];
+            JOIN Registrations r ON r.registration_id = br.registration_id
+            WHERE br.booth_id = ? AND LOWER(r.name) LIKE ?';
+    $params = [$this->id, '%' . strtolower($search) . '%'];
 
     if (!is_null($timeslot_id)) {
       $sql .= ' AND br.timeslot_id = ?';
