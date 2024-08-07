@@ -1,3 +1,19 @@
+<?php
+$timeslots = execute(<<<SQL
+    SELECT timeslot_id as id, timestart, timeend
+    FROM Timeslots 
+    WHERE event_id = ?
+      AND DATE_ADD(timestart, INTERVAL 6 MINUTE) > ?
+  SQL, [
+  $_SESSION['register_event_id'],
+  current_time(),
+])->fetchAll();
+
+if (count($timeslots) == 0) {
+  flash_set('errors', 'form', 'No available timeslots');
+  redirect_response('./?p=1');
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -55,9 +71,6 @@
 
         <?php
         $timeslot_titles = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th"];
-        $timeslots = execute('SELECT timeslot_id as id, timestart, timeend FROM Timeslots WHERE event_id = ?', [
-          $_SESSION['register_event_id']
-        ])->fetchAll();
 
         $timeslots = array_map(function ($v) {
           return array_merge($v, [

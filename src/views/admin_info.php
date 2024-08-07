@@ -1,17 +1,19 @@
 <?php
 define('PAGE_RANGE', 2);
+define('PAGE_LIMIT', 25);
+
 $booth = Booth::find($_SESSION['auth_admin']);
 
 $timeslot_id = $_GET['t'] ?? null;
 $page = intval($_GET['p'] ?? 1);
-$offset = ($page - 1) * 10;
+$offset = ($page - 1) * PAGE_LIMIT;
 
-$reg_results = $booth->get_booth_registrations($timeslot_id, 25, $offset);
+$reg_results = $booth->get_booth_registrations($timeslot_id, PAGE_LIMIT, $offset);
 $time_results = execute("SELECT timeslot_id, timestart, timeend FROM Timeslots WHERE event_id = ?", [$booth->event_id])->fetchAll();
 $count_page = count($reg_results);
 
 $count = $booth->count_booth_registrations($timeslot_id);
-$num_page = ceil($count / 10.0);
+$num_page = ceil($count / floatval(PAGE_LIMIT));
 ?>
 <!DOCTYPE html>
 <html lang="en">

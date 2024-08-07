@@ -32,3 +32,9 @@ function error_response(int $code = 200, string $message = 'Error 200: Bad reque
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !validateCsrfToken()) {
   error_response(403, 'Error 403: Forbidden');
 }
+
+function current_time()
+{
+  $currentTimePST = new DateTime('now', new DateTimeZone('Asia/Manila'));
+  return $currentTimePST->format('Y-m-d H:i:s');
+}

@@ -79,7 +79,7 @@ function handle_page_1()
     $has_error = true;
   }
 
-  if (is_null(Event::find($input['event_id']))) {
+  if (is_null(Event::findValid($input['event_id']))) {
     flash_set('errors', 'event_id', "Event_doesn't exist");
     $has_error = true;
   }
@@ -98,7 +98,7 @@ function handle_page_2()
 {
   if (!isset($_SESSION['_PASSED_1'])) {
     flash_set('errors', 'form', 'No personal data provided');
-    redirect_response('./?p=j');
+    redirect_response('./?p=1');
   }
 
   if (isset($_POST['booths'])) {
@@ -107,9 +107,14 @@ function handle_page_2()
     $booths = [];
   }
 
-  // Check if there is valid booth selection is given
-  $timeslots = execute("SELECT timeslot_id FROM Timeslots WHERE event_id = ?", [
-    $_SESSION['register_event_id']
+  $timeslots = execute(<<<SQL
+      SELECT timeslot_id
+      FROM Timeslots 
+      WHERE event_id = ?
+        AND DATE_ADD(timestart, INTERVAL 6 MINUTE) > ?
+    SQL, [
+    $_SESSION['register_event_id'],
+    current_time(),
   ])->fetchAll(PDO::FETCH_COLUMN);
   $_SESSION['register_booths'] = $booths;
 
@@ -121,7 +126,6 @@ function handle_page_2()
       flash_set('errors', $k, 'You must select a booth');
     }
   }
-
 
   $validBoothIds = execute("SELECT booth_id FROM Booths WHERE event_id = ?", [
     $_SESSION['register_event_id']
@@ -142,7 +146,6 @@ function handle_page_2()
       flash_set('errors', $k, 'Please choose another booth, no slots left');
     }
   }
-
 
 
   if ($has_error) {

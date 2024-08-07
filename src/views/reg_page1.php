@@ -91,6 +91,7 @@
                     type="button"
                     class="btn btn-outline-primary col py-5 d-flex flex-column align-items-center"
                     :class="{'active': <?= $ev->id ?> == selected}"
+                    <?php if ($ev->available === false) echo 'disabled'; ?>
                     @click="selected = <?= $ev->id ?>">
                     <span>
                       <?= $ev->event_name ?>

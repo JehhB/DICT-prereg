@@ -78,9 +78,10 @@
             <h5 class="mb-3">Booth schedule</h5>
             <dl class="row">
               <?php
-              $timeslots = execute('SELECT timeslot_id as id, timestart, timeend FROM Timeslots WHERE event_id = ?', [
-                $_SESSION['register_event_id']
-              ])->fetchAll();
+              $timeslot_ids = array_keys($_SESSION['register_booths']);
+              $placeholder = placeholder($timeslot_ids);
+
+              $timeslots = execute("SELECT timeslot_id as id, timestart, timeend FROM Timeslots WHERE timeslot_id IN ($placeholder)", $timeslot_ids)->fetchAll();
               $timeslots = array_map(function ($v) {
                 return array_merge($v, [
                   'start' => (new DateTime($v['timestart']))->format('H:i'),

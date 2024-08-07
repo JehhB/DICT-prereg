@@ -32,6 +32,17 @@ $count = BoothRegistration::count_summary();
     echo json_encode($count);
     ?>
   </script>
+  <script id="alreadySelected" type="application/json">
+    <?php
+    $selectedBooths = array_filter($registered_booths, function ($v) {
+      return !$v['editable'];
+    });
+    $selectedBooths = array_map(function ($v) {
+      return strval($v['booth_id']);
+    }, $selectedBooths);
+    echo json_encode($selectedBooths);
+    ?>
+  </script>
 </head>
 
 <body class="bg-light-subtle">
@@ -64,7 +75,10 @@ $count = BoothRegistration::count_summary();
       <form action="#" method="post" x-data="form('init-data', '<?= $reg->id ?>')">
         <?= csrf_field() ?>
 
-        <?php foreach ($registered_booths as $i => $t): ?>
+        <?php
+        foreach ($registered_booths as $i => $t):
+          if (!$t['editable']) continue;
+        ?>
           <div
             data-radio-timeslot="<?= $t['timeslot_id'] ?>"
             id="c_<?= $i ?>"

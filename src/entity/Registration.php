@@ -208,13 +208,27 @@ class Registration
 
   public function get_registered_booths(): array
   {
-    $sql = 'SELECT br.booth_registration_id, t.timeslot_id, t.timestart, t.timeend, b.booth_id, b.topic, b.presentor, b.logo
+    $sql = <<<SQL
+          SELECT 
+            br.booth_registration_id, 
+            t.timeslot_id, 
+            t.timestart, 
+            t.timeend, 
+            b.booth_id, 
+            b.topic, 
+            b.presentor, 
+            b.logo, 
+            (DATE_ADD(t.timestart, INTERVAL 6 MINUTE) > ?) as editable
           FROM BoothRegistration br
           JOIN Timeslots t ON br.timeslot_id = t.timeslot_id
           JOIN Booths b ON br.booth_id = b.booth_id
           WHERE br.registration_id = ?
-          ORDER BY t.timestart ASC';
-    return execute($sql, [$this->id])->fetchAll();
+          ORDER BY t.timestart ASC
+          SQL;
+    return execute($sql, [
+      current_time(),
+      $this->id,
+    ])->fetchAll();
   }
 
   public function mark_email_sent()
