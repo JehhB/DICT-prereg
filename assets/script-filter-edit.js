@@ -150,6 +150,33 @@ function attendance() {
       };
     },
 
+    fetchSlug(url) {
+      const urlObject = new URL(url);
+      const queryParams = new URLSearchParams(urlObject.search);
+      const slug = queryParams.get('s');
+
+      this.isLoading = true;
+      this.error = {
+        email: false,
+        qr: false,
+      };
+
+      fetch('./attendance.php?slug=' + slug)
+        .then((resp) => {
+          this.isLoading = false;
+          if (resp.status != 200) {
+            this.error.email = "Invalid qr code";
+            return null;
+          } else {
+            return resp.json();
+          }
+        }).then((data) => {
+          this.data = data;
+        }).catch(() => {
+          this.isLoading = false;
+          this.error.email = "Failed to connect to server";
+        });
+    },
 
     fetchEmail(email) {
       this.isLoading = true;
@@ -178,7 +205,7 @@ function attendance() {
 }
 
 function qrCode() {
-  const config = { fps: 10, qrbox: { width: '250px', height: '250px' } };
+  const config = { fps: 30, qrbox: { width: '250px', height: '250px' } };
   const camera = { facingMode: "environment" };
 
   return {
