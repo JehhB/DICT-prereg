@@ -3,16 +3,17 @@ define('PAGE_RANGE', 2);
 define('PAGE_LIMIT', 25);
 
 $booth = Booth::find($_SESSION['auth_admin']);
+$search = $_GET['s'] ?? '';
 
 $timeslot_id = $_GET['t'] ?? null;
 $page = intval($_GET['p'] ?? 1);
 $offset = ($page - 1) * PAGE_LIMIT;
 
-$reg_results = $booth->get_booth_registrations($timeslot_id, PAGE_LIMIT, $offset);
+$reg_results = $booth->get_booth_registrations($timeslot_id, PAGE_LIMIT, $offset, $search);
 $time_results = execute("SELECT timeslot_id, timestart, timeend FROM Timeslots WHERE event_id = ?", [$booth->event_id])->fetchAll();
 $count_page = count($reg_results);
 
-$count = $booth->count_booth_registrations($timeslot_id);
+$count = $booth->count_booth_registrations($timeslot_id, $search);
 $num_page = ceil($count / floatval(PAGE_LIMIT));
 ?>
 <!DOCTYPE html>
@@ -39,15 +40,27 @@ $num_page = ceil($count / floatval(PAGE_LIMIT));
       <div class="card-body p-4">
         <div class="row">
 
-          <em class="col">
+          <em class="col-12 col-lg-auto">
             <?php if ($count == 0) {
               echo "No registration";
             } else {
               echo "Showing " . strval($offset + 1) . '-' . strval($offset + $count_page) . " of " . $count . " registrations";
             } ?>
           </em>
-          <div class="dropdown mb-4 col-auto ms-auto">
 
+          <div class="col col-lg-auto ms-auto">
+            <form action="admin.php" method="get" class="input-group">
+              <?php if ($timeslot_id): ?>
+                <input type="hidden" name="t" value="<?= $timeslot_id ?>">
+              <?php endif ?>
+              <input class="form-control form-control-sm" type="text" placeholder="Search" name="s" value="<?= $search ?>">
+              <button class="btn btn-sm btn-success">
+                Search
+              </button>
+            </form>
+          </div>
+
+          <div class="dropdown mb-4 col-auto ms-2">
             <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
               Select Time Slot
             </button>
@@ -58,7 +71,7 @@ $num_page = ceil($count / floatval(PAGE_LIMIT));
                 $end = new DateTime($time['timeend']);
                 $timeSlot = htmlspecialchars($start->format('g:i a') . ' - ' . $end->format('g:i a'));
               ?>
-                <li><a class="dropdown-item" href="./admin.php?t=<?= $time['timeslot_id'] ?>"><?= $timeSlot ?></a></li>
+                <li><a class="dropdown-item" href="./admin.php?s=<?= urlencode($search) ?>&t=<?= $time['timeslot_id'] ?>"><?= $timeSlot ?></a></li>
               <?php endforeach; ?>
             </ul>
           </div>
@@ -117,7 +130,13 @@ $num_page = ceil($count / floatval(PAGE_LIMIT));
           <nav class="mx-auto col-auto">
             <ul class="pagination pagination-sm">
               <?php if ($page > 1): ?>
-                <li class="page-item"><a class="page-link" href="./admin.php?<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $page - 1 ?>">Previous</a></li>
+                <li class="page-item">
+                  <a
+                    class="page-link"
+                    href="./admin.php?s=<?= urlencode($search) ?>&<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $page - 1 ?>">
+                    Previous
+                  </a>
+                </li>
               <?php else:  ?>
                 <li class="page-item"><a class="page-link disabled" href="#">Previous</a></li>
               <?php endif; ?>
@@ -125,7 +144,11 @@ $num_page = ceil($count / floatval(PAGE_LIMIT));
 
               <?php if ($page > PAGE_RANGE + 1): ?>
                 <li class="page-item">
-                  <a class="page-link" href="./admin.php?<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=1">1</a>
+                  <a
+                    class="page-link"
+                    href="./admin.php?s=<?= urlencode($search) ?>&<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=1">
+                    1
+                  </a>
                 </li>
 
                 <?php if ($page > PAGE_RANGE + 2): ?>
@@ -139,7 +162,7 @@ $num_page = ceil($count / floatval(PAGE_LIMIT));
                 <li class="page-item">
                   <a
                     class="page-link <?php if ($i == $page) echo 'active'; ?>"
-                    href="./admin.php?<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $i ?>">
+                    href="./admin.php?s=<?= urlencode($search) ?>&<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $i ?>">
                     <?= $i ?>
                   </a>
                 </li>
@@ -152,13 +175,13 @@ $num_page = ceil($count / floatval(PAGE_LIMIT));
                   </li>
                 <?php endif ?>
                 <li class="page-item">
-                  <a class="page-link" href="./admin.php?<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $num_page ?>"><?= $num_page ?></a>
+                  <a class="page-link" href="./admin.php?s=<?= urlencode($search) ?>&<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $num_page ?>"><?= $num_page ?></a>
                 </li>
               <?php endif ?>
 
 
               <?php if ($page < $num_page): ?>
-                <li class="page-item"><a class="page-link" href="./admin.php?<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $page + 1 ?>">Next</a></li>
+                <li class="page-item"><a class="page-link" href="./admin.php?s=<?= urlencode($search) ?>&<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $page + 1 ?>">Next</a></li>
               <?php else:  ?>
                 <li class="page-item"><a class="page-link disabled" href="#">Next</a></li>
               <?php endif; ?>
