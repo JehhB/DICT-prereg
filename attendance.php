@@ -2,6 +2,22 @@
 require_once __DIR__ . '/src/setup.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+  if (isset($_GET['present'])) {
+
+    try {
+      execute('INSERT INTO Attendances (registration_id, signature) VALUES (?,?)', [
+        $_POST['id'],
+        $_POST['signature'],
+      ]);
+    } catch (Exception $e) {
+      flash_set('errors', 'form', 'An attendance is already recorded for this registration');
+    }
+
+    redirect_response('./attendance.php');
+  }
+
+
   if (hash_equals($env['status_password'], $_POST['password'])) {
     $_SESSION['super_admin'] = true;
   } else {

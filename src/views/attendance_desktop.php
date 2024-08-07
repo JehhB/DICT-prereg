@@ -12,6 +12,26 @@
 
 <body x-data="qrCode">
 
+  <?php if (flash_has('errors', 'form')): ?>
+    <div class="modal fade" tabindex="-1" x-data x-init="new bootstrap.Modal($el).show()">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Error</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p><?= flash_get('errors', 'form') ?></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <?php endif ?>
+
+
   <div class="modal fade" tabindex="-1" x-ref="modal">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
@@ -58,7 +78,8 @@
           Attendance
           <a href="./attendance.php?logout=logout" class="ms-auto col-auto btn btn-primary btn-sm">Logout</a>
         </div>
-        <form action="./attendance.php?present=present" class="card-body" @submit.prevent="clearData">
+        <form action="./attendance.php?present=present" class="card-body" method="POST">
+          <?= csrf_field() ?>
           <div class="row g-3">
             <div class="col-12">
               <label for="email" class="form-label d-flex">
