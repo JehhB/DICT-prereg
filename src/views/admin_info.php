@@ -126,68 +126,71 @@ $num_page = ceil($count / floatval(PAGE_LIMIT));
           </table>
         </div>
 
-        <div class="row mt-4">
-          <nav class="mx-auto col-auto">
-            <ul class="pagination pagination-sm">
-              <?php if ($page > 1): ?>
-                <li class="page-item">
-                  <a
-                    class="page-link"
-                    href="./admin.php?s=<?= urlencode($search) ?>&<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $page - 1 ?>">
-                    Previous
-                  </a>
-                </li>
-              <?php else:  ?>
-                <li class="page-item"><a class="page-link disabled" href="#">Previous</a></li>
-              <?php endif; ?>
+        <?php if ($count > 0): ?>
+          <div class="row mt-4">
+            <nav class="mx-auto col-auto">
+              <ul class="pagination pagination-sm">
+                <?php if ($page > 1): ?>
+                  <li class="page-item">
+                    <a
+                      class="page-link"
+                      href="./admin.php?s=<?= urlencode($search) ?>&<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $page - 1 ?>">
+                      Previous
+                    </a>
+                  </li>
+                <?php else:  ?>
+                  <li class="page-item"><a class="page-link disabled" href="#">Previous</a></li>
+                <?php endif; ?>
 
 
-              <?php if ($page > PAGE_RANGE + 1): ?>
-                <li class="page-item">
-                  <a
-                    class="page-link"
-                    href="./admin.php?s=<?= urlencode($search) ?>&<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=1">
-                    1
-                  </a>
-                </li>
+                <?php if ($page > PAGE_RANGE + 1): ?>
+                  <li class="page-item">
+                    <a
+                      class="page-link"
+                      href="./admin.php?s=<?= urlencode($search) ?>&<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=1">
+                      1
+                    </a>
+                  </li>
 
-                <?php if ($page > PAGE_RANGE + 2): ?>
-                  <li class="page-item disabled">
-                    <span class="page-link">&hellip;</span>
+                  <?php if ($page > PAGE_RANGE + 2): ?>
+                    <li class="page-item disabled">
+                      <span class="page-link">&hellip;</span>
+                    </li>
+                  <?php endif ?>
+                <?php endif ?>
+
+                <?php for ($i = max(1, $page - PAGE_RANGE); $i <= min($num_page, $page + PAGE_RANGE); ++$i): ?>
+                  <li class="page-item">
+                    <a
+                      class="page-link <?php if ($i == $page) echo 'active'; ?>"
+                      href="./admin.php?s=<?= urlencode($search) ?>&<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $i ?>">
+                      <?= $i ?>
+                    </a>
+                  </li>
+                <?php endfor; ?>
+
+                <?php if ($page < $num_page - PAGE_RANGE): ?>
+                  <?php if ($page < $num_page - PAGE_RANGE - 1): ?>
+                    <li class="page-item disabled">
+                      <span class="page-link">&hellip;</span>
+                    </li>
+                  <?php endif ?>
+                  <li class="page-item">
+                    <a class="page-link" href="./admin.php?s=<?= urlencode($search) ?>&<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $num_page ?>"><?= $num_page ?></a>
                   </li>
                 <?php endif ?>
-              <?php endif ?>
-
-              <?php for ($i = max(1, $page - PAGE_RANGE); $i <= min($num_page, $page + PAGE_RANGE); ++$i): ?>
-                <li class="page-item">
-                  <a
-                    class="page-link <?php if ($i == $page) echo 'active'; ?>"
-                    href="./admin.php?s=<?= urlencode($search) ?>&<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $i ?>">
-                    <?= $i ?>
-                  </a>
-                </li>
-              <?php endfor; ?>
-
-              <?php if ($page < $num_page - PAGE_RANGE): ?>
-                <?php if ($page < $num_page - PAGE_RANGE - 1): ?>
-                  <li class="page-item disabled">
-                    <span class="page-link">&hellip;</span>
-                  </li>
-                <?php endif ?>
-                <li class="page-item">
-                  <a class="page-link" href="./admin.php?s=<?= urlencode($search) ?>&<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $num_page ?>"><?= $num_page ?></a>
-                </li>
-              <?php endif ?>
 
 
-              <?php if ($page < $num_page): ?>
-                <li class="page-item"><a class="page-link" href="./admin.php?s=<?= urlencode($search) ?>&<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $page + 1 ?>">Next</a></li>
-              <?php else:  ?>
-                <li class="page-item"><a class="page-link disabled" href="#">Next</a></li>
-              <?php endif; ?>
-            </ul>
-          </nav>
-        </div>
+                <?php if ($page < $num_page): ?>
+                  <li class="page-item"><a class="page-link" href="./admin.php?s=<?= urlencode($search) ?>&<?= isset($_GET['t']) ? 't=' . strval($_GET['t']) . '&' : '' ?>p=<?= $page + 1 ?>">Next</a></li>
+                <?php else:  ?>
+                  <li class="page-item"><a class="page-link disabled" href="#">Next</a></li>
+                <?php endif; ?>
+              </ul>
+            </nav>
+          </div>
+        <?php endif ?>
+
       </div>
     </div>
   </div>

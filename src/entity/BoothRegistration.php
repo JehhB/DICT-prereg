@@ -7,8 +7,6 @@ class BoothRegistration
   public mixed $timeslot_id;
   public mixed $booth_id;
 
-
-
   public static function count(array $booths): array
   {
     $counts = [];
@@ -71,5 +69,69 @@ class BoothRegistration
     }
 
     return $counts;
+  }
+
+  private static function mark_processed(int $boothRegistrationId, int $skipped): bool
+  {
+
+    $db = getDB();
+    try {
+      $db->beginTransaction();
+
+      $query = "
+                INSERT INTO ProcessedApplication (booth_registration_id, processed_date, skipped)
+                VALUES (?, CURRENT_TIMESTAMP, ?)
+                ON DUPLICATE KEY UPDATE processed_date = CURRENT_TIMESTAMP, skipped = ?
+            ";
+
+      $result = execute($query, [$boothRegistrationId, $skipped, $skipped]);
+
+      if (!$result) {
+        throw new Exception("Failed to insert or update ProcessedApplication record");
+      }
+
+      $db->commit();
+      return true;
+    } catch (Exception $e) {
+      $db->rollBack();
+      echo ("Error in markProcessed: " . $e->getMessage());
+      return false;
+    }
+  }
+
+  public static function mark_done(int $boothRegistrationId): bool
+  {
+    return self::mark_processed($boothRegistrationId, 0);
+  }
+
+  public static function mark_skipped(int $boothRegistrationId): bool
+  {
+    return self::mark_processed($boothRegistrationId, 1);
+  }
+
+  public static function undo(int $boothRegistrationId): bool
+  {
+    $db = getDB();
+    try {
+      $db->beginTransaction();
+
+      $query = "
+                DELETE FROM ProcessedApplication
+                WHERE booth_registration_id = ?
+            ";
+
+      $result = execute($query, [$boothRegistrationId]);
+
+      if (!$result) {
+        throw new Exception("Failed to delete ProcessedApplication record");
+      }
+
+      $db->commit();
+      return true;
+    } catch (Exception $e) {
+      $db->rollBack();
+      echo ("Error in undo: " . $e->getMessage());
+      return false;
+    }
   }
 }

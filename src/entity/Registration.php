@@ -236,4 +236,159 @@ class Registration
     $sql = 'UPDATE Registrations SET email_sent = TRUE WHERE registration_id = ?';
     execute($sql, [$this->id]);
   }
+
+
+  public static function get_queue(Booth $booth, int $offset = 0, int $perPage = 10, ?string $search = null): array
+  {
+    $current_time = current_time();
+    $params = [
+      ':current_time' => $current_time,
+      ':booth_id' => $booth->id,
+      ':per_page' => [$perPage, PDO::PARAM_INT],
+      ':offset' => [$offset, PDO::PARAM_INT],
+    ];
+
+    $searchCondition = "";
+    if ($search !== null) {
+      $searchCondition = "AND (LOWER(r.name) LIKE :search OR LOWER(r.email) LIKE :search)";
+      $params[':search'] = '%' . strtolower($search) . '%';
+    }
+
+    $query = <<<SQL
+            SELECT 
+                r.*,
+                br.*,
+                ts.timestart,
+                ts.timeend,
+                a.attendance_id,
+                a.is_walkin,
+                a.attendance_date,
+                CASE 
+                    WHEN pa.skipped = TRUE THEN 'skipped'
+                    WHEN pa.processed_application_id IS NOT NULL THEN 'done'
+                    WHEN :current_time BETWEEN ts.timestart AND ts.timeend THEN 'reserved'
+                    WHEN a.is_walkin = TRUE AND ts.timestart < :current_time THEN 'walkin'
+                    WHEN ts.timestart < :current_time AND a.is_walkin = FALSE THEN 'waiting'
+                    ELSE 'scheduled'
+                END AS status
+            FROM BoothRegistration br
+            JOIN Registrations r ON br.registration_id = r.registration_id
+            JOIN Timeslots ts ON br.timeslot_id = ts.timeslot_id
+            LEFT JOIN Attendances a ON r.registration_id = a.registration_id
+            LEFT JOIN ProcessedApplication pa ON br.booth_registration_id = pa.booth_registration_id
+            WHERE br.booth_id = :booth_id
+            AND a.attendance_id IS NOT NULL
+            $searchCondition
+            ORDER BY 
+                CASE 
+                    WHEN status = 'reserved' THEN 1
+                    WHEN status = 'waiting' THEN 2
+                    WHEN status = 'walkin' THEN 3
+                    WHEN status = 'scheduled' THEN 4
+                    WHEN status = 'done' THEN 5
+                    WHEN status = 'skipped' THEN 6
+                    ELSE 7
+                END,
+                r.registration_date ASC
+            LIMIT :per_page OFFSET :offset
+        SQL;
+
+    $stmt = execute($query, $params);
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $queue = [];
+    foreach ($results as $row) {
+      $registration = new self();
+      $registration->id = $row['registration_id'];
+      $registration->registration_date = new DateTime($row['registration_date']);
+      $registration->email = $row['email'];
+      $registration->name = $row['name'];
+      $registration->position = $row['position'];
+      $registration->sex = $row['sex'];
+      $registration->birthday = $row['birthday'];
+      $registration->contact_number = $row['contact_number'];
+      $registration->affiliation = $row['affiliation'];
+      $registration->type = $row['type'];
+      $registration->event_id = $row['event_id'];
+      $registration->is_indigenous = $row['is_indigenous'];
+      $registration->slug = $row['slug'];
+      $registration->email_sent = $row['email_sent'];
+      $registration->qr_code = $row['qr_code'];
+
+      $boothRegistration = new BoothRegistration();
+      $boothRegistration->id = $row['booth_registration_id'];
+      $boothRegistration->registration_id = $row['registration_id'];
+      $boothRegistration->timeslot_id = $row['timeslot_id'];
+      $boothRegistration->booth_id = $row['booth_id'];
+
+      $queue[] = [
+        'registration' => $registration,
+        'booth_registration' => $boothRegistration,
+        'timestart' => $row['timestart'],
+        'timeend' => $row['timeend'],
+        'attendance_id' => $row['attendance_id'],
+        'is_walkin' => $row['is_walkin'],
+        'attendance_date' => $row['attendance_date'],
+        'status' => $row['status']
+      ];
+    }
+
+    return $queue;
+  }
+
+
+  public static function get_queue_json(Booth $booth, int $offset = 0, int $perPage = 10, ?string $search = null): array
+  {
+    $current_time = current_time();
+    $params = [
+      ':current_time' => $current_time,
+      ':booth_id' => $booth->id,
+      ':per_page' => [$perPage, PDO::PARAM_INT],
+      ':offset' => [$offset, PDO::PARAM_INT],
+    ];
+
+    $searchCondition = "";
+    if ($search !== null) {
+      $searchCondition = "AND (LOWER(r.name) LIKE :search OR LOWER(r.email) LIKE :search)";
+      $params[':search'] = '%' . strtolower($search) . '%';
+    }
+
+    $query = <<<SQL
+            SELECT 
+                r.name AS name,
+                br.booth_registration_id AS id,
+                CASE 
+                    WHEN pa.skipped = TRUE THEN 'skipped'
+                    WHEN pa.processed_application_id IS NOT NULL THEN 'done'
+                    WHEN :current_time BETWEEN ts.timestart AND ts.timeend THEN 'reserved'
+                    WHEN a.is_walkin = TRUE AND ts.timestart < :current_time THEN 'walkin'
+                    WHEN ts.timestart < :current_time AND a.is_walkin = FALSE THEN 'waiting'
+                    ELSE 'scheduled'
+                END AS status
+            FROM BoothRegistration br
+            JOIN Registrations r ON br.registration_id = r.registration_id
+            JOIN Timeslots ts ON br.timeslot_id = ts.timeslot_id
+            LEFT JOIN Attendances a ON r.registration_id = a.registration_id
+            LEFT JOIN ProcessedApplication pa ON br.booth_registration_id = pa.booth_registration_id
+            WHERE br.booth_id = :booth_id
+            AND a.attendance_id IS NOT NULL
+            $searchCondition
+            ORDER BY 
+                CASE 
+                    WHEN status = 'reserved' THEN 1
+                    WHEN status = 'waiting' THEN 2
+                    WHEN status = 'walkin' THEN 3
+                    WHEN status = 'scheduled' THEN 4
+                    WHEN status = 'done' THEN 5
+                    WHEN status = 'skipped' THEN 6
+                    ELSE 7
+                END,
+                r.registration_date ASC
+            LIMIT :per_page OFFSET :offset
+        SQL;
+
+    $stmt = execute($query, $params);
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $results;
+  }
 }

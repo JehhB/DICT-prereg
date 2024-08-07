@@ -3,13 +3,30 @@
 require_once __DIR__ . '/src/setup.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+  $page = urlencode($_GET['p'] ?? '1');
+  $search = urlencode($_GET['s'] ?? '');
+
   if (isset($_GET['logout'])) {
     unset($_SESSION['auth_admin']);
-    redirect_response('./admin.php');
+    redirect_response('./queue.php');
   } else if (!isset($_SESSION['auth_admin'])) {
     include __DIR__ . '/src/views/admin_auth.php';
+  } else if (isset($_GET['done'])) {
+    $id = $_GET['done'];
+    BoothRegistration::mark_done($id);
+    redirect_response("./queue.php?p=$page&s=$search");
+  } else if (isset($_GET['skip'])) {
+    $id = $_GET['skip'];
+    BoothRegistration::mark_skipped($id);
+    redirect_response("./queue.php?p=$page&s=$search");
+  } else if (isset($_GET['undo'])) {
+    $id = $_GET['undo'];
+    BoothRegistration::undo($id);
+    redirect_response("./queue.php?p=$page&s=$search");
+  } else if (isset($_GET['table'])) {
+    include __DIR__ . '/src/views/queue-table.php';
   } else {
-    include __DIR__ . '/src/views/admin_info.php';
+    include __DIR__ . '/src/views/queue.php';
   }
   exit();
 }
@@ -53,5 +70,5 @@ if (isset($_POST['login'])) {
   }
 
   $_SESSION['auth_admin'] = $booth->id;
-  redirect_response("./admin.php");
+  redirect_response("./queue.php");
 }

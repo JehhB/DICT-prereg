@@ -2,8 +2,16 @@
   display: none !important;
 }
 
+
 .ratio-2x1 {
-  --bs-aspect-ratio: 50%;
+  --bs-aspect-ratio: 100%;
+}
+
+
+@media (min-width: 576px) {
+  .ratio-2x1 {
+    --bs-aspect-ratio: 50%;
+  }
 }
 
 .card {
