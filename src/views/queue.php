@@ -73,7 +73,7 @@ $count_page = min($page * PAGE_LIMIT, intval($count));
             </thead>
             <tbody
               hx-get="./queue.php?table=1&s=<?= urlencode($search) ?>&p=<?= $page ?>"
-              hx-trigger="load, every 5s"></tbody>
+              hx-trigger="load, every 10s"></tbody>
           </table>
         </div>
 

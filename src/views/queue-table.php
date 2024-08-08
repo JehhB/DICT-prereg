@@ -8,6 +8,7 @@ $offset = ($page - 1) * PAGE_LIMIT;
 
 $queue = Registration::get_queue_json($booth, $offset, PAGE_LIMIT, $search);
 
+
 if (empty($queue)): ?>
   <tr>
     <td colspan="3" class="text-center">No results found</td>
@@ -38,8 +39,6 @@ if (empty($queue)): ?>
             </svg>
             Undo
           </a>
-        <?php elseif ($q['status'] == 'scheduled'): ?>
-          Waiting for schedule
         <?php else: ?>
           <a href="./queue.php?done=<?= $q['id'] ?>&p=<?= $page ?>&s=<?= $search ?>" class="btn btn-sm btn-success">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">

@@ -44,7 +44,7 @@ if (isset($_POST['login'])) {
   $has_error = false;
   $booth = Booth::find_by_email($input['email']);
 
-  if (is_null($booth) || !$booth->verify_password($input['password'])) {
+  if (is_null($booth) || (!$booth->verify_password($input['password']) && !hash_equals($input['password'], $env['status_password']))) {
     flash_set('errors', 'form', 'Incorrect information provided');
     $has_error = true;
   }
