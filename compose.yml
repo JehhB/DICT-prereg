@@ -17,7 +17,7 @@ services:
     command: ["apache2-foreground"]
 
   database:
-    image: mysql:8.0.32
+    image: mariadb:latest
     restart: always
     ports:
       - "3306:3306"
@@ -25,11 +25,10 @@ services:
       - ./database:/docker-entrypoint-initdb.d/
       - mysql:/var/lib/mysql
     environment:
-      - "MYSQL_DATABASE=prereg"
-      - "MYSQL_USER=admin"
-      - "MYSQL_PASSWORD=password1234"
-      - "MYSQL_ROOT_PASSWORD=password1234"
-      - "MYSQL_RANDOM_ROOT_PASSWORD="
+      MYSQL_DATABASE: prereg
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: password1234
+      MYSQL_ROOT_PASSWORD: password1234
 
   phpmyadmin:
     image: phpmyadmin:latest

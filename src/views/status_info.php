@@ -516,7 +516,12 @@ SQL;
 
       <template x-for="(eventData, eventName) in events" :key="eventName">
         <div class="card mb-4">
-          <div class="card-header" x-text="eventName"></div>
+          <div class="card-header d-flex">
+            <span x-text="eventName"></span>
+            <a :href="'status.php?attendance=' + encodeURIComponent(eventName)" class="btn btn-sm btn-primary ms-auto col-auto">
+              Download attendance
+            </a>
+          </div>
           <div class="card-body">
             <template x-for="section in sections" :key="section.title">
               <div class="mb-4">
