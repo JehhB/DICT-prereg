@@ -1,5 +1,6 @@
 <?php
 $reg = Registration::find($_SESSION['auth_summary']);
+$id = execute('SELECT attendance_id FROM Attendances WHERE registration_id = ?', [$reg->id])->fetch();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,6 +27,13 @@ $reg = Registration::find($_SESSION['auth_summary']);
           <a href="./summary.php?logout=logout" class="ms-auto col-auto btn btn-primary btn-sm">Logout</a>
         </div>
         <div class="card-body">
+          <div class="row px-3">
+            <?php if ($id !== false): ?>
+              <div class="alert alert-info">
+                Your attendance is successfully registered. Thanks you for attending the event
+              </div>
+            <?php endif ?>
+          </div>
           <div class="row">
             <img src="<?= $reg->qr_code ?>" alt="QrCode for your id number <?= $reg->slug ?>" class="col-6 mx-auto mb-4 col-sm-5 col-md-3 col-lg-3 mb-md-0">
             <dl class="row mb-0 col-12 col-md-9">
